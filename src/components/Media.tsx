@@ -1,20 +1,15 @@
 export default function Media() {
-    const articles = [
+    const videos = [
         {
-            title: "Visión Sostenible en Fitur",
-            image: "[Imagen Fitur]",
-            link: "#",
+            title: "Entrevista en Negocios TV: Larimar City & Resort",
+            videoId: "W4VAGEWlZ9A",
+            description: "Análisis sobre el desarrollo de Larimar City y el modelo de ciudad inteligente en el Caribe."
         },
         {
-            title: "Entrevista en Negocios TV",
-            image: "[Imagen Negocios TV]",
-            link: "#",
-        },
-        {
-            title: "CLERHP refuerza su liderazgo",
-            image: "[Imagen Forbes / Prensa]",
-            link: "https://larimarcity.com/noticias/clerhp-refuerza-su-liderazgo/",
-        },
+            title: "Estrategia y Crecimiento de CLERHP",
+            videoId: "A9EF_qzw164",
+            description: "Juan Andrés Romero desgrana el momento dulce de la compañía y proyectos futuros."
+        }
     ];
 
     return (
@@ -25,14 +20,23 @@ export default function Media() {
                     <h3 className="text-secondary" style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '1rem' }}>Autoridad y Visibilidad</h3>
                 </div>
 
-                <div className="media-logos fade-in-up delay-1">
-                    {articles.map((article, index) => (
-                        <a key={index} href={article.link} className="media-logo-link" target="_blank" rel="noopener noreferrer">
-                            <div className="media-logo-card">
-                                <span>{article.image}</span>
-                                <p className="media-logo-title">{article.title}</p>
+                <div className="media-grid fade-in-up delay-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem' }}>
+                    {videos.map((video, index) => (
+                        <div key={index} className="media-video-card" style={{ background: 'var(--bg-primary)', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+                            <div className="video-container" style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden' }}>
+                                <iframe
+                                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                                    src={`https://www.youtube.com/embed/${video.videoId}`}
+                                    title={video.title}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
                             </div>
-                        </a>
+                            <div className="video-info" style={{ padding: '1.5rem' }}>
+                                <h4 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-main)' }}>{video.title}</h4>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>{video.description}</p>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>
