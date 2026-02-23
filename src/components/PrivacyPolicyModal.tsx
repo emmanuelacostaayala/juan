@@ -41,8 +41,8 @@ export default function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyMod
 
                     <h4 className="text-main mb-2">2. Uso de la Información</h4>
                     <p>Los datos proporcionados se utilizan con la finalidad única de:</p>
-                    <ul className="mb-4 pl-5" style={{ listStyleType: 'disc' }}>
-                        <li>Responder a solicitudes de información, preguntas o propuestas enviadas por el usuario.</li>
+                    <ul className="pl-5" style={{ listStyleType: 'disc', marginBottom: '2.5rem' }}>
+                        <li style={{ marginBottom: '0.5rem' }}>Responder a solicitudes de información, preguntas o propuestas enviadas por el usuario.</li>
                         <li>Establecer comunicación corporativa o alianzas estratégicas relacionadas con el Arq. Juan Andrés Romero, CLERHP Estructuras o Larimar City.</li>
                     </ul>
 

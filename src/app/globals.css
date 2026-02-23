@@ -211,16 +211,18 @@ button {
 }
 
 .btn-primary {
-  background: var(--accent-gradient);
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(0, 119, 190, 0.2);
+  background: #00e5ff;
+  color: #000000;
+  box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+  font-weight: 700;
 }
 
 
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 119, 190, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 229, 255, 0.5);
+  background: #00d6ef;
 }
 
 .btn-outline {
@@ -378,9 +380,14 @@ button {
 }
 
 .slot-accent {
-  color: #00e5ff;
-  /* Bright Cyan that pops on blue/dark backgrounds */
-  text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+  color: #ffffff;
+  /* White text on dark/blue backgrounds */
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.header-scrolled .slot-accent {
+  color: #000000;
+  text-shadow: none;
 }
 
 /* Animated Gradient Background */

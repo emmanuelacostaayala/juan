@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero"; // Block 1
 import About from "@/components/About"; // Block 2
+import Rheto from "@/components/Rheto"; // Block 2.5
 import ProjectStar from "@/components/ProjectStar"; // Block 3
 import Corporate from "@/components/Corporate"; // Block 4
 import HistoryTimeline from "@/components/HistoryTimeline"; // Block 5
@@ -17,6 +18,7 @@ export default function Home() {
       <Header />
       <Hero />
       <About />
+      <Rheto />
       <ProjectStar />
       <Corporate />
       <HistoryTimeline />
