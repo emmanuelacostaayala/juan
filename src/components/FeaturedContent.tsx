@@ -32,14 +32,14 @@ export default function FeaturedContent() {
                     {/* Artículos / Reflexiones */}
                     <div className="featured-articles">
                         <div className="article-card">
-                            <h4>La arquitectura como motor de cambio social</h4>
-                            <p>Reflexiones sobre cómo el diseño urbano impacta directamente en el desarrollo económico y la calidad de vida de las comunidades.</p>
-                            <a href="#" className="btn-link">Leer artículo &rarr;</a>
+                            <h4>Premio Internacional al Mejor Desarrollo Inmobiliario</h4>
+                            <p>Entrevista con La Razón tras recibir el galardón en los Premios Construcción y Vivienda por la innovación en Larimar City & Resort.</p>
+                            <a href="https://www.youtube.com/watch?v=kGgUvAUUcoE" target="_blank" rel="noopener noreferrer" className="btn-link">Ver entrevista &rarr;</a>
                         </div>
                         <div className="article-card">
-                            <h4>El futuro del Real Estate en el Caribe</h4>
-                            <p>Análisis de las tendencias de inversión, sostenibilidad e infraestructura que están moldeando el futuro del sector inmobiliario.</p>
-                            <a href="#" className="btn-link">Ver video &rarr;</a>
+                            <h4>Estrategia, Inversión y Modelos Sostenibles</h4>
+                            <p>Análisis en Estrategias de Inversión sobre la expansión de CLERHP, rentabilidad y el impacto de los proyectos en el Caribe.</p>
+                            <a href="https://www.estrategiasdeinversion.com/analisis/bolsa-y-mercados/el-experto-opina/clerhp-es-la-mejor-opcion-para-tener-exposicion-n-868221" target="_blank" rel="noopener noreferrer" className="btn-link">Leer artículo &rarr;</a>
                         </div>
                     </div>
 
