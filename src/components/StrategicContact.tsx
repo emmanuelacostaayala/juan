@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function StrategicContact() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,6 +14,23 @@ export default function StrategicContact() {
     const closeContactModal = () => {
         setIsModalOpen(false);
         setContactType("");
+    };
+
+    useEffect(() => {
+        if (isModalOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isModalOpen]);
+
+    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            closeContactModal();
+        }
     };
 
     return (
@@ -36,7 +53,7 @@ export default function StrategicContact() {
 
             {/* Modal de Contacto */}
             {isModalOpen && (
-                <div className="contact-modal-overlay fade-in">
+                <div className="contact-modal-overlay fade-in" onClick={handleOverlayClick}>
                     <div className="contact-modal-content slide-up">
                         <button className="contact-modal-close" onClick={closeContactModal}>&times;</button>
                         <h3 className="mb-3 text-gradient">Contacto {contactType}</h3>

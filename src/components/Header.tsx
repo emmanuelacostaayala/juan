@@ -20,6 +20,7 @@ export default function Header() {
         { name: "Larimar City", href: "#larimar-city" },
         { name: "Visión", href: "#corporate" },
         { name: "Prensa", href: "#media" },
+        { name: "Contacto", href: "#contact" },
     ];
 
     return (

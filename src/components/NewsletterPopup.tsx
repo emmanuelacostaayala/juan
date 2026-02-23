@@ -19,9 +19,26 @@ export default function NewsletterPopup() {
         return () => clearTimeout(timer);
     }, []);
 
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
     const handleClose = () => {
         setIsOpen(false);
         localStorage.setItem("jar_newsletter_seen", "true");
+    };
+
+    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            handleClose();
+        }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -37,7 +54,7 @@ export default function NewsletterPopup() {
     if (!isOpen) return null;
 
     return (
-        <div className="popup-overlay fade-in">
+        <div className="popup-overlay fade-in" onClick={handleOverlayClick}>
             <div className="popup-content slide-up">
                 <button className="popup-close" onClick={handleClose}>&times;</button>
 

@@ -1,6 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import PrivacyPolicyModal from "./PrivacyPolicyModal";
+
 export default function Footer() {
+    const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
     return (
         <footer id="contact" className="site-footer bg-secondary">
             <div className="container">
@@ -44,10 +48,15 @@ export default function Footer() {
 
                 <div className="footer-bottom">
                     <p className="text-secondary text-sm text-center mt-5 pt-3 border-t" style={{ marginBottom: 0, paddingBottom: '2rem' }}>
-                        &copy; {new Date().getFullYear()} Arq. Juan Andrés Romero. <a href="/privacidad" style={{ textDecoration: 'underline' }}>Política de Privacidad</a>. Todos los derechos reservados.
+                        &copy; {new Date().getFullYear()} Arq. Juan Andrés Romero. <button onClick={() => setIsPrivacyModalOpen(true)} style={{ textDecoration: 'underline', background: 'none', border: 'none', padding: 0, color: 'inherit', cursor: 'pointer', font: 'inherit' }}>Política de Privacidad</button>. Todos los derechos reservados.
                     </p>
                 </div>
             </div>
+
+            <PrivacyPolicyModal
+                isOpen={isPrivacyModalOpen}
+                onClose={() => setIsPrivacyModalOpen(false)}
+            />
         </footer>
     );
 }
