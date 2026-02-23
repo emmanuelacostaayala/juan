@@ -8,7 +8,7 @@ export default function About() {
                 <div className="about-grid mt-5">
                     <div className="about-image-wrapper fade-in-up delay-2">
                         <img
-                            src="/DSCF7084.jpg"
+                            src="/DSCF7081.jpg"
                             alt="Arq. Juan Andrés Romero"
                             style={{ width: '100%', maxWidth: '450px', borderRadius: '12px', objectFit: 'cover', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
                         />
