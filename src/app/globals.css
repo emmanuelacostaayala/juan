@@ -1119,3 +1119,168 @@ button {
   border-radius: 4px;
   font-family: inherit;
 }
+
+/* ===================================================
+   INTRO SCREEN — animated box with shatter effect
+   =================================================== */
+
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(120deg, #004e92, #0077be, #00a8cc, #ffb88c, #0077be, #4a90e2, #004e92);
+  background-size: 400% 400%;
+  animation: bgPan 20s ease infinite;
+  pointer-events: all;
+}
+
+.intro-overlay--exit {
+  animation: bgPan 20s ease infinite, introOverlayFade 1.6s ease 0.4s forwards;
+  pointer-events: none;
+}
+
+@keyframes introOverlayFade {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ---- Box wrapper ---- */
+
+.intro-box-wrapper {
+  position: relative;
+  width: 400px;
+  height: 300px;
+  --slot-offset: 0px;
+  background: linear-gradient(145deg, rgba(0, 55, 110, 0.75) 0%, rgba(0, 30, 75, 0.9) 100%);
+  backdrop-filter: blur(6px);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 0 0 1px rgba(0, 200, 255, 0.4),
+    0 0 40px rgba(0, 180, 255, 0.25),
+    inset 0 0 60px rgba(0, 60, 140, 0.3);
+  overflow: visible;
+}
+
+.intro-box-wrapper--shatter {
+  background: transparent;
+  backdrop-filter: none;
+  animation: wrapperBorderBreak 0.4s ease-out forwards;
+}
+
+@keyframes wrapperBorderBreak {
+  0%   { border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 0 0 1px rgba(0,200,255,0.4), 0 0 40px rgba(0,180,255,0.25); }
+  20%  { border-color: rgba(255, 255, 255, 1);   box-shadow: 0 0 0 6px rgba(255,255,255,1),   0 0 100px rgba(255,255,255,0.9); }
+  100% { border-color: rgba(255, 255, 255, 0);   box-shadow: none; }
+}
+
+/* ---- Single content layer (spinning phase) ---- */
+
+.intro-main-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Irregular polygon shards (break phase only) ---- */
+
+.intro-shard {
+  position: absolute;
+  inset: 0;
+}
+
+.intro-shard-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, rgba(0, 55, 110, 0.85) 0%, rgba(0, 30, 75, 0.95) 100%);
+}
+
+/* All shards use one unified fly animation driven by CSS variables */
+.intro-shard--fly {
+  animation: shardFly 0.8s cubic-bezier(0.0, 0.0, 0.3, 1.0) forwards;
+}
+
+@keyframes shardFly {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; }
+}
+
+/* ---- Flash burst on break ---- */
+
+.intro-flash {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle at center, #ffffff 0%, rgba(200, 235, 255, 0.9) 30%, transparent 65%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.intro-flash--active {
+  animation: introFlash 0.5s ease-out forwards;
+}
+
+@keyframes introFlash {
+  0%   { opacity: 0; transform: scale(0.3); }
+  15%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.5); }
+}
+
+/* ---- Typography ---- */
+
+.intro-slot-container {
+  height: 4rem;
+  overflow: hidden;
+  display: block;
+}
+
+/* Driven by JS via --slot-offset custom property on wrapper */
+.intro-slot-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transform: translateY(var(--slot-offset, 0px));
+}
+
+.intro-slot-list li {
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 3.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-shadow: 0 0 28px rgba(255, 255, 255, 0.7), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.intro-name--full {
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .intro-box-wrapper {
+    width: 300px;
+    height: 210px;
+  }
+  .intro-slot-container { height: 2.8rem; }
+  .intro-slot-list li   { height: 2.8rem; font-size: 2.2rem; }
+}
