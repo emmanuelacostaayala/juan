@@ -461,6 +461,155 @@ button {
   flex-wrap: wrap;
 }
 
+/* ===================================================
+   HERO ENTRANCE ANIMATION — 5-phase sequence
+   =================================================== */
+
+/* ── Floating badge (phases p1 / p2 / p3) ── */
+.hero-float-badge {
+  z-index: 10;
+  background: linear-gradient(145deg, rgba(0, 50, 100, 0.82) 0%, rgba(0, 25, 65, 0.92) 100%);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 0 1px rgba(0, 200, 255, 0.35), 0 0 35px rgba(0, 160, 255, 0.3);
+  border-radius: 3px;
+  /* Fixed height = one slot item — clips the list to show only one at a time */
+  height: var(--hbih, 60px);
+  overflow: hidden;
+  width: auto;
+  padding: 0 1.4rem;
+  will-change: transform;
+}
+
+.hero-float-slot-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* Driven by JS RAF + easeOutExpo — no CSS animation needed */
+  will-change: transform;
+}
+
+.hero-float-slot-list li {
+  height: var(--hbih, 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 2.2rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+}
+
+/* Badge appears with a scale-in pop */
+.hero-float-badge--p1 {
+  animation: heroBadgePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes heroBadgePop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ── Hero name: hidden / wipe-reveal / visible ── */
+.hero-name--hidden {
+  opacity: 0;
+  clip-path: inset(0 100% 0 0);
+}
+
+.hero-name--reveal {
+  opacity: 1;
+  clip-path: inset(0 0% 0 0);
+  animation: heroNameWipe 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: clip-path;
+}
+
+.hero-name--visible {
+  opacity: 1;
+  clip-path: inset(0 0% 0 0);
+}
+
+@keyframes heroNameWipe {
+  0%   { clip-path: inset(0 100% 0 0); opacity: 1; }
+  100% { clip-path: inset(0 0% 0 0);   opacity: 1; }
+}
+
+/* ── Divider grow ── */
+.hero-divider--hidden {
+  transform: scaleY(0);
+  opacity: 0;
+}
+
+.hero-divider--grow {
+  transform-origin: center;
+  animation: heroDividerGrow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes heroDividerGrow {
+  0%   { transform: scaleY(0); opacity: 0; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+/* ── Taglines stagger slide-up ── */
+.hero-tagline {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.hero-tagline--in {
+  animation: heroTaglineIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-tagline--delay-0 { animation-delay: 0ms; }
+.hero-tagline--delay-1 { animation-delay: 160ms; }
+.hero-tagline--delay-2 { animation-delay: 320ms; }
+
+@keyframes heroTaglineIn {
+  0%   { opacity: 0; transform: translateY(18px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Inline badge visibility ── */
+.hero-inline-badge--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero-inline-badge--show {
+  animation: heroBadgeFadeIn 0.35s ease forwards;
+}
+
+@keyframes heroBadgeFadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ── CTA button ── */
+.hero-actions--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero-actions--show {
+  animation: heroTaglineIn 0.6s ease 0.3s forwards;
+}
+
+/* ── idle state: everything hidden until animation starts ── */
+.hero-phase-idle .brand-lockup,
+.hero-phase-idle .hero-actions {
+  opacity: 0;
+}
+
+/* Once done, ensure everything is fully visible (handles any opacity leftover) */
+.hero-phase-done .hero-tagline,
+.hero-phase-done .hero-actions--show {
+  opacity: 1;
+  transform: none;
+}
+
 /* About Section */
 .about-grid {
   display: grid;
@@ -1164,19 +1313,19 @@ button {
   overflow: visible;
 }
 
-.intro-box-wrapper--shatter {
-  background: transparent;
-  backdrop-filter: none;
-  animation: wrapperBorderBreak 0.4s ease-out forwards;
+/* ---- Exit: flash + scale-up fade ---- */
+
+.intro-box-wrapper--exit {
+  animation: wrapperExit 0.6s cubic-bezier(0.4, 0, 0.6, 1) forwards;
 }
 
-@keyframes wrapperBorderBreak {
-  0%   { border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 0 0 1px rgba(0,200,255,0.4), 0 0 40px rgba(0,180,255,0.25); }
-  20%  { border-color: rgba(255, 255, 255, 1);   box-shadow: 0 0 0 6px rgba(255,255,255,1),   0 0 100px rgba(255,255,255,0.9); }
-  100% { border-color: rgba(255, 255, 255, 0);   box-shadow: none; }
+@keyframes wrapperExit {
+  0%   { opacity: 1; transform: scale(1);    }
+  15%  { opacity: 1; transform: scale(1.06); }
+  100% { opacity: 0; transform: scale(1.4);  }
 }
 
-/* ---- Single content layer (spinning phase) ---- */
+/* ---- Single content layer ---- */
 
 .intro-main-content {
   position: absolute;
@@ -1187,34 +1336,7 @@ button {
   justify-content: center;
 }
 
-/* ---- Irregular polygon shards (break phase only) ---- */
-
-.intro-shard {
-  position: absolute;
-  inset: 0;
-}
-
-.intro-shard-content {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(145deg, rgba(0, 55, 110, 0.85) 0%, rgba(0, 30, 75, 0.95) 100%);
-}
-
-/* All shards use one unified fly animation driven by CSS variables */
-.intro-shard--fly {
-  animation: shardFly 0.8s cubic-bezier(0.0, 0.0, 0.3, 1.0) forwards;
-}
-
-@keyframes shardFly {
-  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; }
-}
-
-/* ---- Flash burst on break ---- */
+/* ---- Flash burst ---- */
 
 .intro-flash {
   position: absolute;
@@ -1226,13 +1348,13 @@ button {
 }
 
 .intro-flash--active {
-  animation: introFlash 0.5s ease-out forwards;
+  animation: introFlash 0.45s ease-out forwards;
 }
 
 @keyframes introFlash {
   0%   { opacity: 0; transform: scale(0.3); }
-  15%  { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(2.5); }
+  18%  { opacity: 1; transform: scale(1);   }
+  100% { opacity: 0; transform: scale(2.2); }
 }
 
 /* ---- Typography ---- */
@@ -1243,12 +1365,12 @@ button {
   display: block;
 }
 
-/* Driven by JS via --slot-offset custom property on wrapper */
+/* Transform driven directly by JS (style.transform on the element) */
 .intro-slot-list {
   margin: 0;
   padding: 0;
   list-style: none;
-  transform: translateY(var(--slot-offset, 0px));
+  will-change: transform;
 }
 
 .intro-slot-list li {
