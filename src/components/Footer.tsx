@@ -6,7 +6,7 @@ import PrivacyPolicyModal from "./PrivacyPolicyModal";
 export default function Footer() {
     const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
     return (
-        <footer id="contact" className="site-footer bg-secondary">
+        <footer id="footer" className="site-footer bg-secondary">
             <div className="container">
                 <div className="footer-grid">
                     <div className="footer-brand">

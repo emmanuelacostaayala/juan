@@ -1,29 +1,34 @@
 export default function HistoryTimeline() {
     const timelineEvents = [
         {
-            year: "Crisis",
-            title: "El Punto de Inflexión",
-            description: "Momentos críticos que forjaron la resiliencia y sentaron las bases para una visión renovada del futuro."
+            year: "ETSAM",
+            title: "Formación en Arquitectura",
+            description: "Graduado en la Escuela Técnica Superior de Arquitectura de Madrid (ETSAM) y posterior formación en dirección empresarial con el Advanced Management Program de IE Business School."
         },
         {
-            year: "Reconstrucción",
-            title: "Cimientos Sólidos",
-            description: "Rediseñando la estrategia corporativa desde la integridad y la innovación tras el aprendizaje."
+            year: "Rheto",
+            title: "Rheto Arquitectos",
+            description: "Funda su propio estudio de arquitectura, Rheto Arquitectos, donde forja la filosofía de diseño y la sensibilidad espacial que definirán todos sus proyectos futuros."
         },
         {
-            year: "CLERHP",
-            title: "Expansión y Solidez",
-            description: "Consolidación de CLERHP Estructuras como líder internacional, llevando excelencia técnica a nuevos mercados."
+            year: "2011",
+            title: "Fundación de CLERHP",
+            description: "Con 29 años, viaja a Latinoamérica y funda CLERHP Estructuras, integrando ingeniería estructural y construcción con enfoque internacional. Operaciones en España, Paraguay y Bolivia."
         },
         {
-            year: "Larimar",
-            title: "El Sueño Hecho Realidad",
-            description: "Concepción y desarrollo de Larimar City, transformando el paisaje del Caribe con urbanismo sostenible."
+            year: "2016",
+            title: "Salida a Bolsa",
+            description: "CLERHP debuta en el MAB (hoy BME Growth), convirtiéndose en la única empresa de la Región de Murcia cotizada en este mercado. Finalista del Premio BMN Joven Empresario."
         },
         {
-            year: "Presente",
-            title: "Legado en Construcción",
-            description: "Liderando con propósito, expandiendo horizontes y dejando una huella perdurable en cada proyecto."
+            year: "2021",
+            title: "Larimar City & Resort",
+            description: "Expansión a República Dominicana con el lanzamiento de Larimar City & Resort en Punta Cana: una inversión inicial de 600 millones de euros sobre 3.600.000 m²."
+        },
+        {
+            year: "2025",
+            title: "Inauguración Histórica",
+            description: "Larimar City & Resort se inaugura como la primera smart city de República Dominicana. Más de 200 proyectos ejecutados en 5 países consolidan el legado de CLERHP."
         }
     ];
 
@@ -31,9 +36,9 @@ export default function HistoryTimeline() {
         <section id="history" className="section-padding bg-secondary">
             <div className="container">
                 <div className="section-header text-center mb-5">
-                    <h2 className="fade-in-up">Historia Personal</h2>
+                    <h2 className="fade-in-up">Trayectoria</h2>
                     <h3 className="text-secondary fade-in-up delay-1" style={{ fontStyle: 'italic', fontWeight: 'normal', marginTop: '1rem' }}>
-                        “Donde otros vieron un final, yo encontré un comienzo.”
+                        De Mazarrón al Caribe: arquitectura, ingeniería y liderazgo empresarial.
                     </h3>
                 </div>
 

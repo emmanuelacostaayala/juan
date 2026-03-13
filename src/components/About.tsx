@@ -3,7 +3,7 @@ export default function About() {
         <section id="about" className="section-padding bg-secondary">
             <div className="container text-center" style={{ maxWidth: '1000px' }}>
                 <h2 className="fade-in-up">Presentación</h2>
-                <h3 className="text-gradient fade-in-up delay-1 mb-5">Visión e Integridad</h3>
+                <h3 className="text-gradient fade-in-up delay-1 mb-5">Liderazgo e Integridad</h3>
 
                 <div className="about-grid mt-5">
                     <div className="about-image-wrapper fade-in-up delay-2">

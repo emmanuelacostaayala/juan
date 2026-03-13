@@ -24,8 +24,8 @@ export default function FeaturedContent() {
         <section id="featured-content" className="section-padding">
             <div className="container">
                 <div className="section-header text-center mb-5">
-                    <h2 className="fade-in-up">Reflexiones y Visión</h2>
-                    <h3 className="text-gradient fade-in-up delay-1">Contenidos Destacados</h3>
+                    <h2 className="fade-in-up">Reconocimientos y Prensa</h2>
+                    <h3 className="text-gradient fade-in-up delay-1">Publicaciones Destacadas</h3>
                 </div>
 
                 <div className="featured-grid fade-in-up delay-2">

@@ -10,10 +10,12 @@ const BADGE_ITEMS = [
     'ARQ.', 'EMP.', 'CEO.',
     'ARQ.',
 ];
-const BADGE_ITEM_H = 60; // px — fixed height for floating badge items
-const BADGE_SCROLL_TOTAL = 12 * BADGE_ITEM_H; // 720px lands on last ARQ.
 
-// easeOutExpo gives the most convincing slot-machine deceleration feel
+// Fixed item height matching CSS (.hero-float-slot-list li { height: 88px })
+const BADGE_ITEM_H   = 88;
+const BADGE_SCROLL   = 12 * BADGE_ITEM_H; // 1056px — lands on final ARQ.
+
+// easeOutExpo: most convincing slot-machine deceleration
 function easeOutExpo(t: number): number {
     return t >= 1 ? 1 : 1 - Math.pow(2, -10 * t);
 }
@@ -23,10 +25,10 @@ type Phase = 'idle' | 'p1' | 'p2' | 'p3' | 'p4' | 'p5' | 'done';
 export default function Hero() {
     const [phase, setPhase] = useState<Phase>('idle');
 
-    const sectionRef    = useRef<HTMLElement>(null);
-    const slotListRef   = useRef<HTMLUListElement>(null);   // floating badge slot list
-    const inlineBadgeRef = useRef<HTMLSpanElement>(null);   // final inline superscript
-    const nameLineRef   = useRef<HTMLSpanElement>(null);    // "JUAN ANDRÉS" for sweep target
+    const sectionRef     = useRef<HTMLElement>(null);
+    const slotListRef    = useRef<HTMLUListElement>(null);
+    const inlineBadgeRef = useRef<HTMLSpanElement>(null);
+    const nameLineRef    = useRef<HTMLSpanElement>(null);
 
     const [badgeStyle, setBadgeStyle] = useState<React.CSSProperties>({
         position: 'absolute',
@@ -37,47 +39,38 @@ export default function Hero() {
         willChange: 'transform',
     });
 
-    // ── Wait for IntroScreen to fire 'intro-complete' ─────────────────────
+    // ── Start animation on mount ────────────────────────────────────────
     useEffect(() => {
-        const handler = () => {
-            // Overlay fade takes 1.6s (+ 0.4s delay = 2s total).
-            // Start badge pop slightly before overlay fully disappears.
-            setTimeout(() => setPhase('p1'), 1500);
-        };
-        window.addEventListener('intro-complete', handler, { once: true });
-        return () => window.removeEventListener('intro-complete', handler);
+        const t = setTimeout(() => setPhase('p1'), 300);
+        return () => clearTimeout(t);
     }, []);
 
-    // ── Phase 1: JS-driven slot deceleration (easeOutExpo, 2s) ───────────
+    // ── P1: JS-driven slot deceleration (easeOutExpo, 2.2 s) ─────────────
     useEffect(() => {
         if (phase !== 'p1') return;
 
         const slotList = slotListRef.current;
-        if (!slotList) { setTimeout(() => setPhase('p2'), 2300); return; }
+        if (!slotList) { setTimeout(() => setPhase('p2'), 2500); return; }
 
-        const duration = 2000; // ms
+        const duration = 2200;
         let startTime: number | null = null;
         let rafId: number;
 
         const step = (ts: number) => {
             if (startTime === null) startTime = ts;
             const t = Math.min((ts - startTime) / duration, 1);
-            const y = easeOutExpo(t) * BADGE_SCROLL_TOTAL;
-            slotList.style.transform = `translateY(-${y}px)`;
-
+            slotList.style.transform = `translateY(-${easeOutExpo(t) * BADGE_SCROLL}px)`;
             if (t < 1) {
                 rafId = requestAnimationFrame(step);
             } else {
-                // Brief pause on ARQ. before sweeping
-                setTimeout(() => setPhase('p2'), 320);
+                setTimeout(() => setPhase('p2'), 380); // brief pause on ARQ.
             }
         };
-
         rafId = requestAnimationFrame(step);
         return () => cancelAnimationFrame(rafId);
     }, [phase]);
 
-    // ── Phase 2: badge sweeps right, name wipes in ────────────────────────
+    // ── P2: sweep right + scale down (badge flies toward name) ───────────
     useEffect(() => {
         if (phase !== 'p2') return;
 
@@ -87,23 +80,23 @@ export default function Hero() {
         if (section && nameLine) {
             const sr = section.getBoundingClientRect();
             const nr = nameLine.getBoundingClientRect();
-            // Target: right edge of "JUAN ANDRÉS", vertically centered on it
-            const tx = nr.right  - sr.left - sr.width  / 2;
+            // Target: past the right edge of "JUAN ANDRÉS" + gap
+            const tx = nr.right + 80 - sr.left - sr.width  / 2;
             const ty = nr.top + nr.height / 2 - sr.top - sr.height / 2;
 
-            // Tiny windup to the left first, then sweep right
             setBadgeStyle(prev => ({
                 ...prev,
-                transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0.8)`,
-                transition: 'transform 1.0s cubic-bezier(0.16, 1, 0.3, 1)',
+                // Scale shrinks from 1 → 0.78 during flight
+                transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0.78)`,
+                transition: 'transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
             }));
         }
 
-        const t = setTimeout(() => setPhase('p3'), 1100);
+        const t = setTimeout(() => setPhase('p3'), 1300);
         return () => clearTimeout(t);
     }, [phase]);
 
-    // ── Phase 3: FLIP badge to exact inline superscript position ─────────
+    // ── P3: FLIP to exact inline superscript position ─────────────────────
     useEffect(() => {
         if (phase !== 'p3') return;
 
@@ -115,23 +108,24 @@ export default function Hero() {
             const ir = inlineBadge.getBoundingClientRect();
             const tx = ir.left + ir.width  / 2 - sr.left - sr.width  / 2;
             const ty = ir.top  + ir.height / 2 - sr.top  - sr.height / 2;
+            // Scale down from BADGE_ITEM_H to the inline badge's rendered height
             const scale = ir.height / BADGE_ITEM_H;
 
             setBadgeStyle(prev => ({
                 ...prev,
                 transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(${scale})`,
-                transition: 'transform 0.55s cubic-bezier(0.23, 1, 0.32, 1)',
+                transition: 'transform 0.65s cubic-bezier(0.23, 1, 0.32, 1)',
             }));
         }
 
-        const t = setTimeout(() => setPhase('p4'), 650);
+        const t = setTimeout(() => setPhase('p4'), 750);
         return () => clearTimeout(t);
     }, [phase]);
 
-    // ── p4 → p5 → done ────────────────────────────────────────────────────
+    // ── P4 → P5 → done ───────────────────────────────────────────────────
     useEffect(() => {
         if (phase !== 'p4') return;
-        const t = setTimeout(() => setPhase('p5'), 550);
+        const t = setTimeout(() => setPhase('p5'), 500);
         return () => clearTimeout(t);
     }, [phase]);
 
@@ -150,17 +144,13 @@ export default function Hero() {
             ref={sectionRef}
             className={`hero-section bg-animated-gradient hero-phase-${phase}`}
         >
-            {/* ── Floating badge: phases p1/p2/p3 ── */}
-            {phase !== 'idle' && showFloat && (
+            {/* ── Floating badge: phases p1 / p2 / p3 ── */}
+            {showFloat && (
                 <div
                     className={`hero-float-badge hero-float-badge--${phase}`}
                     style={badgeStyle}
                 >
-                    <ul
-                        ref={slotListRef}
-                        className="hero-float-slot-list"
-                        style={{ '--hbih': `${BADGE_ITEM_H}px` } as React.CSSProperties}
-                    >
+                    <ul ref={slotListRef} className="hero-float-slot-list">
                         {BADGE_ITEMS.map((item, i) => (
                             <li key={i}>{item}</li>
                         ))}

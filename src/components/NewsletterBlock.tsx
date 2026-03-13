@@ -38,7 +38,7 @@ export default function NewsletterBlock() {
                         </form>
                     ) : (
                         <div className="newsletter-success fade-in">
-                            <h3>¡Gracias por unirte a nuestra visión!</h3>
+                            <h3>¡Gracias por suscribirte!</h3>
                             <p style={{ color: '#aaa' }}>Pronto recibirás nuestras novedades en tu bandeja de entrada.</p>
                         </div>
                     )}

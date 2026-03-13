@@ -16,9 +16,10 @@ export default function Header() {
 
     const navLinks = [
         { name: "Inicio", href: "#hero" },
-        { name: "Trayectoria", href: "#about" },
-        { name: "Larimar City", href: "#larimar-city" },
-        { name: "Visión", href: "#corporate" },
+        { name: "Perfil", href: "#about" },
+        { name: "Larimar", href: "#larimar-city" },
+        { name: "CLERHP", href: "#corporate" },
+        { name: "Trayectoria", href: "#history" },
         { name: "Prensa", href: "#media" },
         { name: "Contacto", href: "#contact" },
     ];

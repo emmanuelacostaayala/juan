@@ -1,4 +1,3 @@
-import IntroScreen from "@/components/IntroScreen";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero"; // Block 1
 import About from "@/components/About"; // Block 2
@@ -16,7 +15,6 @@ import NewsletterPopup from "@/components/NewsletterPopup";
 export default function Home() {
   return (
     <main className="min-h-screen">
-      <IntroScreen />
       <Header />
       <Hero />
       <About />
