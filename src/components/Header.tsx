@@ -127,11 +127,12 @@ export default function Header() {
           display: inline-flex;
           align-items: center;
           gap: 0.5rem;
-          font-size: var(--fs-13);
+          font-size: var(--fs-15);
           font-weight: 900;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.04em;
           text-transform: uppercase;
           color: var(--color-white);
+          -webkit-text-stroke: 0.35px currentColor;
         }
         .site-header__wordmark-group {
           position: relative;

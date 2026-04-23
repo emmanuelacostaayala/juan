@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import RoleBadge from "./RoleBadge";
 
 export default function Footer() {
   return (
@@ -98,7 +99,12 @@ export default function Footer() {
           </div>
 
           <div className="site-footer__wordmark-wrap" aria-hidden="true">
-            <span className="site-footer__wordmark">JUAN ANDRÉS ROMERO</span>
+            <span className="site-footer__wordmark-group">
+              <span className="site-footer__wordmark">JUAN ANDRÉS ROMERO</span>
+              <span className="site-footer__wordmark-badge">
+                <RoleBadge size="sm" />
+              </span>
+            </span>
           </div>
 
           <div className="site-footer__bottom">
@@ -148,15 +154,26 @@ export default function Footer() {
           text-align: center;
           overflow: hidden;
         }
+        .site-footer__wordmark-group {
+          display: inline-flex;
+          align-items: flex-start;
+          gap: 0.2em;
+          white-space: nowrap;
+        }
         .site-footer__wordmark {
-          display: block;
           font-family: var(--font-display);
           font-weight: 500;
-          font-size: clamp(1.75rem, 7vw, 6.5rem);
+          font-size: clamp(1.75rem, 6.6vw, 6rem);
           line-height: 0.9;
           letter-spacing: -0.05em;
           color: var(--color-white);
           white-space: nowrap;
+        }
+        .site-footer__wordmark-badge {
+          display: inline-flex;
+          align-self: flex-start;
+          flex-shrink: 0;
+          margin-top: 0.15em;
         }
 
         .site-footer__bottom {
