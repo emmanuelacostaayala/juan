@@ -152,7 +152,7 @@ export default function Footer() {
           display: block;
           font-family: var(--font-display);
           font-weight: 500;
-          font-size: clamp(2rem, 8.5vw, 8rem);
+          font-size: clamp(1.75rem, 7vw, 6.5rem);
           line-height: 0.9;
           letter-spacing: -0.05em;
           color: var(--color-white);
