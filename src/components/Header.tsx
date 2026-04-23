@@ -128,7 +128,7 @@ export default function Header() {
           align-items: center;
           gap: 0.5rem;
           font-size: var(--fs-13);
-          font-weight: 700;
+          font-weight: 900;
           letter-spacing: 0.1em;
           text-transform: uppercase;
           color: var(--color-white);
