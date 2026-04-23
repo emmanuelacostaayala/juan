@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import RoleBadge from "./RoleBadge";
 
 export default function Footer() {
   return (
@@ -63,12 +62,7 @@ export default function Footer() {
           </div>
 
           <div className="site-footer__wordmark-wrap" aria-hidden="true">
-            <span className="site-footer__wordmark-group">
-              <span className="site-footer__wordmark">JUAN ANDRÉS ROMERO</span>
-              <span className="site-footer__wordmark-badge">
-                <RoleBadge size="lg" />
-              </span>
-            </span>
+            <span className="site-footer__wordmark">JUAN ANDRÉS ROMERO</span>
           </div>
 
           <div className="site-footer__bottom">
@@ -114,32 +108,19 @@ export default function Footer() {
         }
 
         .site-footer__wordmark-wrap {
-          position: relative;
           padding-block: clamp(3rem, 8vw, 5rem) 2rem;
           text-align: center;
-        }
-        .site-footer__wordmark-group {
-          position: relative;
-          display: inline-flex;
-          align-items: flex-start;
-          gap: clamp(0.4rem, 0.6vw, 0.8rem);
-          white-space: nowrap;
-          max-width: 100%;
+          overflow: hidden;
         }
         .site-footer__wordmark {
+          display: block;
           font-family: var(--font-display);
           font-weight: 500;
-          font-size: clamp(1.3rem, 7.2vw, 7.2rem);
+          font-size: clamp(2.5rem, 13.5vw, 13rem);
           line-height: 0.9;
-          letter-spacing: -0.06em;
+          letter-spacing: -0.05em;
           color: var(--color-white);
           white-space: nowrap;
-        }
-        .site-footer__wordmark-badge {
-          display: inline-flex;
-          flex-shrink: 0;
-          margin-top: clamp(0.1rem, 0.4vw, 0.5rem);
-          transform-origin: left top;
         }
 
         .site-footer__bottom {
@@ -162,16 +143,10 @@ export default function Footer() {
             flex-direction: column;
             align-items: flex-start;
           }
-          .site-footer__wordmark-badge {
-            transform: scale(0.5);
-          }
         }
         @media (max-width: 560px) {
           .site-footer__grid {
             grid-template-columns: 1fr;
-          }
-          .site-footer__wordmark-badge {
-            transform: scale(0.28);
           }
         }
       `}</style>
