@@ -149,7 +149,6 @@ export default function ContactSection() {
         .contacto {
           background: var(--color-white);
           scroll-margin-top: 5rem;
-          padding-block: clamp(4rem, 9vw, 7rem);
         }
         .contacto__grid {
           display: grid;

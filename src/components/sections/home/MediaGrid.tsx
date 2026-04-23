@@ -96,6 +96,7 @@ export default function MediaGrid() {
           background: var(--color-ink);
           color: var(--color-white);
           scroll-margin-top: 5rem;
+          padding-block: clamp(4rem, 9vw, 7rem);
         }
         .media__head {
           margin-bottom: clamp(2.5rem, 5vw, 4rem);
