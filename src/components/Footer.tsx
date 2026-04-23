@@ -1,62 +1,180 @@
 "use client";
 
-import { useState } from "react";
-import PrivacyPolicyModal from "./PrivacyPolicyModal";
+import Link from "next/link";
+import RoleBadge from "./RoleBadge";
 
 export default function Footer() {
-    const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
-    return (
-        <footer id="footer" className="site-footer bg-secondary">
-            <div className="container">
-                <div className="footer-grid">
-                    <div className="footer-brand">
-                        <h2 className="footer-logo">
-                            <span className="text-gradient">ARQ.</span> JUAN ANDRÉS ROMERO
-                        </h2>
-                        <p className="footer-slogan">Construyendo futuro, creando legado.</p>
-                        <div className="social-links mt-3" style={{ display: 'flex', gap: '1rem' }}>
-                            <a href="https://www.linkedin.com/in/juan-andres-romero-hernandez/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="social-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                            </a>
-                            <a href="https://www.instagram.com/juanandres_clerhp/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="social-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div className="footer-contact">
-                        <h3>Contacto</h3>
-                        <p className="mb-3 text-secondary">
-                            Para inversores, alianzas institucionales o prensa.
-                        </p>
-                        <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
-                            <div className="form-group">
-                                <input type="text" placeholder="Nombre completo" required />
-                            </div>
-                            <div className="form-group">
-                                <input type="email" placeholder="Correo electrónico" required />
-                            </div>
-                            <div className="form-group">
-                                <textarea placeholder="Mensaje" rows={4} required></textarea>
-                            </div>
-                            <button type="submit" className="btn btn-primary w-full">
-                                Enviar Mensaje
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <div className="footer-bottom">
-                    <p className="text-secondary text-sm text-center mt-5 pt-3 border-t" style={{ marginBottom: 0, paddingBottom: '2rem' }}>
-                        &copy; {new Date().getFullYear()} Arq. Juan Andrés Romero. <button onClick={() => setIsPrivacyModalOpen(true)} style={{ textDecoration: 'underline', background: 'none', border: 'none', padding: 0, color: 'inherit', cursor: 'pointer', font: 'inherit' }}>Política de Privacidad</button>. Todos los derechos reservados.
-                    </p>
-                </div>
+  return (
+    <footer className="site-footer">
+      <section className="site-footer__main">
+        <div className="container">
+          <div className="site-footer__grid">
+            <div className="site-footer__col">
+              <h3 className="uppercase-tag">Háblalo a tu</h3>
+              <ul className="site-footer__links">
+                <li><Link href="/#sobre-mi">Sobre mí</Link></li>
+                <li><Link href="/#larimar-city">Larimar City</Link></li>
+                <li><Link href="/#clerhp">CLERHP</Link></li>
+                <li><Link href="/#articulos-y-medios">Artículos & medios</Link></li>
+                <li><Link href="/#contacto">Contacto</Link></li>
+              </ul>
             </div>
 
-            <PrivacyPolicyModal
-                isOpen={isPrivacyModalOpen}
-                onClose={() => setIsPrivacyModalOpen(false)}
-            />
-        </footer>
-    );
+            <div className="site-footer__col">
+              <h3 className="uppercase-tag">Contacto</h3>
+              <ul className="site-footer__links">
+                <li><a href="mailto:hola@juanandresromero.com">hola@juanandresromero.com</a></li>
+                <li><a href="tel:+34900000000">+34 900 000 000</a></li>
+              </ul>
+            </div>
+
+            <div className="site-footer__col">
+              <h3 className="uppercase-tag">Redes</h3>
+              <ul className="site-footer__links">
+                <li>
+                  <a
+                    href="https://www.linkedin.com/in/juan-andres-romero-hernandez/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    LinkedIn
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.instagram.com/juanandres_clerhp/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Instagram
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="site-footer__col site-footer__col--legal">
+              <h3 className="uppercase-tag">Legal</h3>
+              <ul className="site-footer__links">
+                <li><Link href="/privacidad">Política de privacidad</Link></li>
+                <li><Link href="/aviso-legal">Aviso legal</Link></li>
+                <li><Link href="/cookies">Cookies</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="site-footer__wordmark-wrap" aria-hidden="true">
+            <span className="site-footer__wordmark-group">
+              <span className="site-footer__wordmark">JUAN ANDRÉS ROMERO</span>
+              <span className="site-footer__wordmark-badge">
+                <RoleBadge size="lg" />
+              </span>
+            </span>
+          </div>
+
+          <div className="site-footer__bottom">
+            <p>© {new Date().getFullYear()} Juan Andrés Romero. Todos los derechos reservados.</p>
+            <p>Construyendo futuro, creando legado.</p>
+          </div>
+        </div>
+      </section>
+
+      <style jsx>{`
+        .site-footer {
+          background: var(--color-ink);
+          color: var(--fg-on-dark);
+          margin-top: auto;
+        }
+
+        .site-footer__main {
+          padding-block: clamp(3rem, 6vw, 5rem) 2rem;
+        }
+        .site-footer__grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 2.5rem;
+          padding-bottom: clamp(3rem, 8vw, 5rem);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .site-footer__col h3 {
+          color: rgba(255, 255, 255, 0.5);
+          margin-bottom: 1rem;
+        }
+        .site-footer__links {
+          display: flex;
+          flex-direction: column;
+          gap: 0.625rem;
+        }
+        .site-footer__links :global(a) {
+          font-size: var(--fs-15);
+          color: rgba(255, 255, 255, 0.82);
+          transition: color 180ms var(--ease-out);
+        }
+        .site-footer__links :global(a:hover) {
+          color: var(--color-accent);
+        }
+
+        .site-footer__wordmark-wrap {
+          position: relative;
+          padding-block: clamp(3rem, 8vw, 5rem) 2rem;
+          text-align: center;
+        }
+        .site-footer__wordmark-group {
+          position: relative;
+          display: inline-flex;
+          align-items: flex-start;
+          gap: clamp(0.4rem, 0.6vw, 0.8rem);
+          white-space: nowrap;
+          max-width: 100%;
+        }
+        .site-footer__wordmark {
+          font-family: var(--font-display);
+          font-weight: 500;
+          font-size: clamp(1.3rem, 7.2vw, 7.2rem);
+          line-height: 0.9;
+          letter-spacing: -0.06em;
+          color: var(--color-white);
+          white-space: nowrap;
+        }
+        .site-footer__wordmark-badge {
+          display: inline-flex;
+          flex-shrink: 0;
+          margin-top: clamp(0.1rem, 0.4vw, 0.5rem);
+          transform-origin: left top;
+        }
+
+        .site-footer__bottom {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 1rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          color: var(--fg-on-dark-muted);
+          font-size: var(--fs-13);
+        }
+
+        @media (max-width: 900px) {
+          .site-footer__grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+          }
+          .site-footer__bottom {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .site-footer__wordmark-badge {
+            transform: scale(0.5);
+          }
+        }
+        @media (max-width: 560px) {
+          .site-footer__grid {
+            grid-template-columns: 1fr;
+          }
+          .site-footer__wordmark-badge {
+            transform: scale(0.28);
+          }
+        }
+      `}</style>
+    </footer>
+  );
 }

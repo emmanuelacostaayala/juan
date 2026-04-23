@@ -1,33 +1,49 @@
-import Header from "@/components/Header";
-import Hero from "@/components/Hero"; // Block 1
-import About from "@/components/About"; // Block 2
-import Rheto from "@/components/Rheto"; // Block 2.5
-import ProjectStar from "@/components/ProjectStar"; // Block 3
-import Corporate from "@/components/Corporate"; // Block 4
-import HistoryTimeline from "@/components/HistoryTimeline"; // Block 5
-import FeaturedContent from "@/components/FeaturedContent"; // Block 6
-import Media from "@/components/Media"; // Block 7
-import NewsletterBlock from "@/components/NewsletterBlock"; // Block 8
-import StrategicContact from "@/components/StrategicContact"; // Block 9
-import Footer from "@/components/Footer";
-import NewsletterPopup from "@/components/NewsletterPopup";
+"use client";
 
-export default function Home() {
+import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
+import HeroIntro from "@/components/HeroIntro";
+import Hero from "@/components/sections/home/Hero";
+import AboutJAR from "@/components/sections/home/AboutJAR";
+import LarimarIntro from "@/components/sections/home/LarimarIntro";
+import ClerhpBlock from "@/components/sections/home/ClerhpBlock";
+import VisionQuote from "@/components/sections/home/VisionQuote";
+import LatestNews from "@/components/sections/home/LatestNews";
+import Faqs from "@/components/sections/home/Faqs";
+import MediaGrid from "@/components/sections/home/MediaGrid";
+import ContactSection from "@/components/sections/home/ContactSection";
+import NewsletterBlock from "@/components/NewsletterBlock";
+
+export default function HomePage() {
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setShowIntro(false), 3500);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = showIntro ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [showIntro]);
+
   return (
-    <main className="min-h-screen">
-      <Header />
-      <Hero />
-      <About />
-      <Rheto />
-      <ProjectStar />
-      <Corporate />
-      <HistoryTimeline />
-      <FeaturedContent />
-      <Media />
-      <NewsletterBlock />
-      <StrategicContact />
-      <Footer />
-      <NewsletterPopup />
-    </main>
+    <>
+      <AnimatePresence>
+        {showIntro && <HeroIntro key="intro" />}
+      </AnimatePresence>
+      <main>
+        <Hero />
+        <AboutJAR />
+        <LarimarIntro />
+        <ClerhpBlock />
+        <VisionQuote />
+        <LatestNews />
+        <Faqs />
+        <MediaGrid />
+        <ContactSection />
+        <NewsletterBlock />
+      </main>
+    </>
   );
 }
