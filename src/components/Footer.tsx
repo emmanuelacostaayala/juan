@@ -32,7 +32,16 @@ export default function Footer() {
               <ul className="site-footer__links">
                 <li>
                   <a
-                    href="https://www.linkedin.com/in/juan-andres-romero-hernandez/"
+                    href="https://www.instagram.com/juanandres_clerhp?igsh=MTI3emR1d2d0djNpcw%3D%3D&utm_source=qr"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Instagram
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.linkedin.com/in/juan-andres-romero-hernandez?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -41,11 +50,38 @@ export default function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://www.instagram.com/juanandres_clerhp/"
+                    href="https://www.tiktok.com/@proximamentepodcast?_r=1&_t=ZS-95mW9C1Yw5s"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Instagram
+                    TikTok
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://x.com/ceo_clerhp?s=21"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    X
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://youtube.com/@proximamentepodcast?si=zrACi4EgJD7SAwlH"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    YouTube
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://open.spotify.com/show/1zrGBdSh888eF5xV2SOl8D?si=XtSbwc77SmeKh_Cx4VEKIg"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Spotify
                   </a>
                 </li>
               </ul>
