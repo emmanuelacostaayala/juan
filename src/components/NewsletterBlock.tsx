@@ -8,7 +8,7 @@ export default function NewsletterBlock() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <section className="nl section">
+    <section id="newsletter" className="nl section">
       <div className="container nl__inner">
         <Reveal className="nl__copy">
           <p className="uppercase-tag nl__tag">Newsletter</p>
@@ -52,6 +52,7 @@ export default function NewsletterBlock() {
         .nl {
           background: var(--color-ink);
           color: var(--color-white);
+          scroll-margin-top: 5rem;
         }
         .nl__inner {
           display: grid;

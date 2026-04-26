@@ -9,7 +9,9 @@ const NAV_LINKS = [
   { label: "Sobre mí", href: "/#sobre-mi" },
   { label: "Larimar City", href: "/#larimar-city" },
   { label: "CLERHP", href: "/#clerhp" },
-  { label: "Artículos & Medios", href: "/#articulos-y-medios" },
+  { label: "Artículos", href: "/#articulos-y-medios" },
+  { label: "Podcast", href: "/#podcast" },
+  { label: "Newsletter", href: "/#newsletter" },
 ];
 
 

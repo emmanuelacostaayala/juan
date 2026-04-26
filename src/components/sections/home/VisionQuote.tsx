@@ -30,11 +30,12 @@ export default function VisionQuote() {
         <Reveal variants={slideLeft}>
           <div className="vision__portrait">
             <Image
-              src={images.portraitBwStudio}
-              alt="Juan Andrés Romero, retrato editorial en blanco y negro"
+              src={images.portraitEditorial}
+              alt="Juan Andrés Romero, retrato editorial"
               fill
               sizes="(max-width: 800px) 100vw, 40vw"
               className="vision__img"
+              quality={90}
               style={{ objectFit: "cover", objectPosition: "center top" }}
             />
             <div className="vision__gradient" aria-hidden="true" />
