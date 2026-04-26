@@ -123,7 +123,7 @@ export default function Header() {
           gap: 2rem;
           color: var(--color-white);
         }
-        .site-header__logo {
+        :global(.site-header__logo) {
           display: inline-flex;
           align-items: center;
           gap: 0.5rem;
