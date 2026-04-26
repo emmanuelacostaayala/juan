@@ -128,12 +128,11 @@ export default function Header() {
           align-items: center;
           gap: 0.5rem;
           font-family: var(--font-display);
-          font-size: var(--fs-18);
+          font-size: var(--fs-15);
           font-weight: 700;
-          letter-spacing: 0.01em;
+          letter-spacing: 0.04em;
           text-transform: uppercase;
           color: var(--color-white);
-          -webkit-text-stroke: 2px currentColor;
         }
         .site-header__wordmark-group {
           position: relative;
