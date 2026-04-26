@@ -33,11 +33,12 @@ export default function ContactSection() {
       <div className="contacto__grid">
         <aside className="contacto__aside">
           <Image
-            src={images.portraitBwStudio}
+            src={images.portraitSmile}
             alt=""
             fill
             sizes="(max-width: 900px) 100vw, 50vw"
             className="contacto__aside-img"
+            quality={90}
           />
           <div className="contacto__aside-overlay" aria-hidden="true" />
           <blockquote className="contacto__quote">
@@ -53,9 +54,10 @@ export default function ContactSection() {
         <div className="contacto__form-wrap">
           <header className="contacto__head">
             <p className="uppercase-tag contacto__tag">Contacto</p>
-            <h2 className="contacto__title">Hablemos.</h2>
+            <h2 className="contacto__title">Colaboremos.</h2>
             <p className="contacto__sub">
-              Para prensa, alianzas institucionales o colaboraciones.
+              Cuéntame en qué estás trabajando — prensa, instituciones o
+              colaboraciones, todo es bienvenido.
             </p>
           </header>
 

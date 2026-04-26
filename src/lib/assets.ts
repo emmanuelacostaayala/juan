@@ -41,6 +41,9 @@ export const images = {
   portraitB: `${FIGMA}/ca6e83893fcc8f72774d6ee3bafa24ca904bb620.png`,
   portraitC: `${FIGMA}/bfb27dfa0f8f8cf445f9dbd565904f68787a56af.png`,
 
+  // Original brand photography (Dropbox shoot)
+  portraitSmile: `/photos/portrait-smile.jpg`, // JAR smiling, charcoal suit, backlit shelf interior
+
   // Media outlet logos
   logoVozpopuli: `${FIGMA}/420a328ffa9d034d921cd471f410f99745662164.png`,
   logoMark: `${FIGMA}/ad0b059af848d3918f8c66b9bae6a81f4172cb22.png`,

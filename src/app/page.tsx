@@ -11,6 +11,7 @@ import VisionQuote from "@/components/sections/home/VisionQuote";
 import LatestNews from "@/components/sections/home/LatestNews";
 import Faqs from "@/components/sections/home/Faqs";
 import MediaGrid from "@/components/sections/home/MediaGrid";
+import PodcastBlock from "@/components/sections/home/PodcastBlock";
 import ContactSection from "@/components/sections/home/ContactSection";
 import NewsletterBlock from "@/components/NewsletterBlock";
 
@@ -41,6 +42,7 @@ export default function HomePage() {
         <LatestNews />
         <Faqs />
         <MediaGrid />
+        <PodcastBlock />
         <ContactSection />
         <NewsletterBlock />
       </main>
