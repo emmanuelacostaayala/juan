@@ -12,7 +12,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://juanandresromero.com"),
+  metadataBase: new URL("https://juanandresromero.es"),
   title: {
     default: "Juan Andrés Romero — Arquitectura del futuro",
     template: "%s · Juan Andrés Romero",

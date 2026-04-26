@@ -25,8 +25,7 @@ export default function Footer() {
             <div className="site-footer__col">
               <h3 className="uppercase-tag">Contacto</h3>
               <ul className="site-footer__links">
-                <li><a href="mailto:hola@juanandresromero.com">hola@juanandresromero.com</a></li>
-                <li><a href="tel:+34900000000">+34 900 000 000</a></li>
+                <li><a href="mailto:info@juanandresromero.es">info@juanandresromero.es</a></li>
               </ul>
             </div>
 
