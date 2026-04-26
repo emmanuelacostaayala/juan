@@ -10,12 +10,14 @@ export default function Footer() {
         <div className="container">
           <div className="site-footer__grid">
             <div className="site-footer__col">
-              <h3 className="uppercase-tag">Háblalo a tu</h3>
+              <h3 className="uppercase-tag">Navegación</h3>
               <ul className="site-footer__links">
                 <li><Link href="/#sobre-mi">Sobre mí</Link></li>
                 <li><Link href="/#larimar-city">Larimar City</Link></li>
                 <li><Link href="/#clerhp">CLERHP</Link></li>
                 <li><Link href="/#articulos-y-medios">Artículos & medios</Link></li>
+                <li><Link href="/#podcast">Podcast</Link></li>
+                <li><Link href="/#newsletter">Newsletter</Link></li>
                 <li><Link href="/#contacto">Contacto</Link></li>
               </ul>
             </div>
