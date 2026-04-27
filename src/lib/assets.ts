@@ -7,7 +7,7 @@ const FIGMA = "/figma";
 
 export const images = {
   // JAR portraits
-  heroMarina: `${FIGMA}/6a4dd28bd2639c5649a28fed32eb4e9f32bff336.png`,      // 1512x982 — JAR at marina, warm dusk, main hero
+  heroPool: `/photos/hero-pool.jpg`, // JAR seated by infinity pool, panoramic dusk view — main hero
   portraitTallNavy: `${FIGMA}/13c3d6c14ff943b2d1d3a1dd665411c0f9988903.png`, // 471x667 — JAR navy suit, wooden panel
   portraitDesk: `${FIGMA}/f4daa3b529cfcca49da5fa146cd257d0390fe6da.png`,    // 720x720 — JAR at dark desk, smiling
   portraitConstruction: `${FIGMA}/245a7958586eec68d23a6de49867fb79da202b23.png`, // 720x472 — JAR at construction site, sunset

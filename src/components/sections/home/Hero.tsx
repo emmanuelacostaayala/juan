@@ -12,13 +12,14 @@ export default function Hero() {
     <section className="home-hero">
       <div className="home-hero__media" aria-hidden="true">
         <Image
-          src={images.heroMarina}
+          src={images.heroPool}
           alt=""
           fill
           priority
           sizes="100vw"
+          quality={90}
           className="home-hero__img"
-          style={{ objectFit: "cover", objectPosition: "center 25%" }}
+          style={{ objectFit: "cover", objectPosition: "center" }}
         />
         <div className="home-hero__media-overlay" />
       </div>
