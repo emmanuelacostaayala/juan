@@ -41,8 +41,8 @@ export const images = {
   portraitC: `${FIGMA}/bfb27dfa0f8f8cf445f9dbd565904f68787a56af.png`,
 
   // Original brand photography (Dropbox shoot)
-  portraitSmile: `/photos/portrait-smile.jpg`, // JAR smiling, charcoal suit, backlit shelf interior
-  portraitEditorial: `/photos/portrait-editorial.jpg`, // JAR editorial serious, charcoal suit, same setting
+  portraitSunset: `/photos/portrait-sunset.jpg`, // JAR navy blazer, golden sunset behind — used in Contact (Colaboremos)
+  portraitPool: `/photos/portrait-pool.jpg`,     // JAR white guayabera, infinity pool — used in Historia personal
 
   // Media outlet logos
   logoVozpopuli: `${FIGMA}/420a328ffa9d034d921cd471f410f99745662164.png`,

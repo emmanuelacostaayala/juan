@@ -30,8 +30,8 @@ export default function VisionQuote() {
         <Reveal variants={slideLeft}>
           <div className="vision__portrait">
             <Image
-              src={images.portraitEditorial}
-              alt="Juan Andrés Romero, retrato editorial"
+              src={images.portraitPool}
+              alt="Juan Andrés Romero junto a la piscina, atardecer en el territorio"
               fill
               sizes="(max-width: 800px) 100vw, 40vw"
               className="vision__img"

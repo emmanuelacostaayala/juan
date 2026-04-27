@@ -33,7 +33,7 @@ export default function ContactSection() {
       <div className="contacto__grid">
         <aside className="contacto__aside">
           <Image
-            src={images.portraitSmile}
+            src={images.portraitSunset}
             alt=""
             fill
             sizes="(max-width: 900px) 100vw, 50vw"
