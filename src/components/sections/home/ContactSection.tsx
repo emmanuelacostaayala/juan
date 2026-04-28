@@ -1,32 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import Image from "next/image";
 import { images } from "@/lib/assets";
+import { submitContact, type ContactState } from "@/app/actions/contact";
 
 const TABS = ["Prensa", "Instituciones", "Colaboradores"] as const;
 type Tab = (typeof TABS)[number];
 
+const initialState: ContactState = { ok: false };
+
 export default function ContactSection() {
   const [tab, setTab] = useState<Tab>("Prensa");
-  const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-    accept: false,
-  });
-
-  const update = (key: keyof typeof form, value: string | boolean) => {
-    setForm((f) => ({ ...f, [key]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.accept) return;
-    setSubmitted(true);
-  };
+  const [state, formAction, pending] = useActionState(submitContact, initialState);
 
   return (
     <section id="contacto" className="contacto">
@@ -65,6 +51,7 @@ export default function ContactSection() {
             {TABS.map((t) => (
               <button
                 key={t}
+                type="button"
                 role="tab"
                 aria-selected={tab === t}
                 className={`contacto__tab ${tab === t ? "is-active" : ""}`}
@@ -75,37 +62,35 @@ export default function ContactSection() {
             ))}
           </div>
 
-          {submitted ? (
+          {state.ok ? (
             <div className="contacto__success" role="status">
-              <h3>Gracias.</h3>
+              <h3>Gracias{state.echo?.name ? `, ${state.echo.name}` : ""}.</h3>
               <p>
-                Hemos recibido tu mensaje como <strong>{tab}</strong>. Te
-                respondemos lo antes posible.
+                Hemos recibido tu mensaje como{" "}
+                <strong>{state.echo?.tab ?? tab}</strong>. Te respondemos lo
+                antes posible.
               </p>
             </div>
           ) : (
-            <form className="contacto__form" onSubmit={handleSubmit}>
+            <form className="contacto__form" action={formAction} noValidate>
+              <input type="hidden" name="tab" value={tab} />
+              {/* honeypot for bots */}
+              <input
+                type="text"
+                name="company"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={{ position: "absolute", left: "-9999px", width: 1, height: 1 }}
+              />
+
               <div className="field">
                 <label htmlFor="c-name" className="field__label">Nombre</label>
-                <input
-                  id="c-name"
-                  className="field__input"
-                  type="text"
-                  required
-                  value={form.name}
-                  onChange={(e) => update("name", e.target.value)}
-                />
+                <input id="c-name" className="field__input" type="text" name="name" required />
               </div>
               <div className="field">
                 <label htmlFor="c-email" className="field__label">Email</label>
-                <input
-                  id="c-email"
-                  className="field__input"
-                  type="email"
-                  required
-                  value={form.email}
-                  onChange={(e) => update("email", e.target.value)}
-                />
+                <input id="c-email" className="field__input" type="email" name="email" required />
               </div>
               <div className="field">
                 <label htmlFor="c-phone" className="field__label">Teléfono</label>
@@ -113,9 +98,8 @@ export default function ContactSection() {
                   id="c-phone"
                   className="field__input"
                   type="tel"
+                  name="phone"
                   placeholder="+34"
-                  value={form.phone}
-                  onChange={(e) => update("phone", e.target.value)}
                 />
               </div>
               <div className="field">
@@ -123,24 +107,23 @@ export default function ContactSection() {
                 <textarea
                   id="c-message"
                   className="field__textarea"
+                  name="message"
                   required
-                  value={form.message}
-                  onChange={(e) => update("message", e.target.value)}
                 />
               </div>
               <label className="contacto__check">
-                <input
-                  type="checkbox"
-                  required
-                  checked={form.accept}
-                  onChange={(e) => update("accept", e.target.checked)}
-                />
-                <span>
-                  He leído y acepto la política de privacidad.
-                </span>
+                <input type="checkbox" name="accept" required />
+                <span>He leído y acepto la política de privacidad.</span>
               </label>
-              <button type="submit" className="btn btn--dark contacto__submit">
-                Enviar
+
+              {state.error && (
+                <p className="contacto__error" role="alert">
+                  {state.error}
+                </p>
+              )}
+
+              <button type="submit" className="btn btn--dark contacto__submit" disabled={pending}>
+                {pending ? "Enviando…" : "Enviar"}
               </button>
             </form>
           )}
@@ -247,6 +230,7 @@ export default function ContactSection() {
           display: flex;
           flex-direction: column;
           gap: 1.25rem;
+          position: relative;
         }
         .contacto__check {
           display: flex;
@@ -257,10 +241,19 @@ export default function ContactSection() {
           line-height: 1.4;
           cursor: pointer;
         }
+        .contacto__error {
+          font-size: var(--fs-14);
+          color: #c0392b;
+          margin: 0;
+        }
         .contacto__submit {
           align-self: flex-start;
           padding: 1rem 2rem;
           min-width: 180px;
+        }
+        .contacto__submit:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
         }
         .contacto__success {
           padding: 2rem 0;
