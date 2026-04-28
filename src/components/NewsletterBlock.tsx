@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
 import { Reveal } from "@/lib/motion";
+import { subscribeNewsletter, type NewsletterState } from "@/app/actions/newsletter";
+
+const initialState: NewsletterState = { ok: false };
 
 export default function NewsletterBlock() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [state, formAction, pending] = useActionState(subscribeNewsletter, initialState);
 
   return (
     <section id="newsletter" className="nl section">
@@ -21,29 +23,31 @@ export default function NewsletterBlock() {
         </Reveal>
 
         <Reveal delay={0.1} className="nl__form-wrap">
-          {!submitted ? (
-            <form
-              className="nl__form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (email) setSubmitted(true);
-              }}
-            >
+          {state.ok ? (
+            <p className="nl__success">Gracias — te escribiremos pronto.</p>
+          ) : (
+            <form className="nl__form" action={formAction} noValidate>
+              <input
+                type="text"
+                name="company"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={{ position: "absolute", left: "-9999px", width: 1, height: 1 }}
+              />
               <input
                 type="email"
+                name="email"
                 className="nl__input"
                 placeholder="Tu correo electrónico"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 required
                 aria-label="Correo electrónico"
               />
-              <button type="submit" className="nl__btn">
-                Suscribirme
+              <button type="submit" className="nl__btn" disabled={pending}>
+                {pending ? "Enviando…" : "Suscribirme"}
               </button>
+              {state.error && <p className="nl__error" role="alert">{state.error}</p>}
             </form>
-          ) : (
-            <p className="nl__success">Gracias — te escribiremos pronto.</p>
           )}
         </Reveal>
       </div>
@@ -81,6 +85,14 @@ export default function NewsletterBlock() {
         .nl__form {
           display: flex;
           gap: 0.75rem;
+          position: relative;
+          flex-wrap: wrap;
+        }
+        .nl__error {
+          flex-basis: 100%;
+          font-size: var(--fs-13);
+          color: #ff8e8e;
+          margin: 0;
         }
         .nl__input {
           flex: 1;
