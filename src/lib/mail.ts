@@ -13,7 +13,7 @@ if (!host || !user || !pass) {
 }
 
 export const mailer = nodemailer.createTransport({
-  host: host ?? "smtp.zoho.eu",
+  host: host ?? "smtp.zoho.com",
   port: Number(process.env.SMTP_PORT ?? 465),
   secure: process.env.SMTP_SECURE !== "false",
   auth: { user: user ?? "", pass: pass ?? "" },
