@@ -34,9 +34,8 @@ export async function requestAdminCode(
     return { ok: false, error: "Email no válido." };
   }
 
-  // Don't reveal which addresses are admins — fake a success when not allowed
   if (!ADMIN_EMAILS.includes(email)) {
-    return { ok: true, sent: true, email };
+    return { ok: false, error: "Este correo no tiene acceso al panel." };
   }
 
   const code = generateCode();

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { sql } from "@/lib/db";
-import { mailer, FROM } from "@/lib/mail";
+import { mailer, FROM, CONTACT_INBOX } from "@/lib/mail";
 import { getSession } from "@/lib/session";
 
 export type PublishState = {
@@ -107,6 +107,26 @@ export async function publishNewsletter(
     const text = `${title}\n\n${body}\n\n—\nRecibes este correo porque te suscribiste en juanandresromero.es`;
 
     recipients = await chunkSend(emails, title, html, text);
+
+    // Send an internal copy to info@ so the team can preview the rendered email
+    const previewHtml = `<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:640px;color:#1a1a18">
+      <div style="background:#fff7e0;border:1px solid #f0e0a8;padding:0.75rem 1rem;border-radius:6px;font-size:13px;margin-bottom:1.25rem">
+        <strong>Copia interna</strong> · enviado a ${recipients} suscriptor${recipients === 1 ? "" : "es"}.
+      </div>
+      ${html}
+    </div>`;
+    const previewText = `[Copia interna · enviado a ${recipients} suscriptor${recipients === 1 ? "" : "es"}]\n\n${text}`;
+    try {
+      await mailer.sendMail({
+        from: FROM,
+        to: CONTACT_INBOX,
+        subject: `[Copia] ${title}`,
+        html: previewHtml,
+        text: previewText,
+      });
+    } catch (err) {
+      console.error("[newsletter] preview copy failed", err);
+    }
   }
 
   const sentAt = sendNow ? new Date() : null;
