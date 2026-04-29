@@ -4,6 +4,9 @@ import { sql } from "@/lib/db";
 import AdminDashboard from "./AdminDashboard";
 
 export const dynamic = "force-dynamic";
+// Allow newsletter sends to take up to 60s — covers ~240 recipients at the
+// 250ms throttle. For larger lists, switch to a transactional email service.
+export const maxDuration = 60;
 
 export default async function AdminPage() {
   const session = await getSession();

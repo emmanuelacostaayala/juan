@@ -5,8 +5,13 @@ CREATE TABLE IF NOT EXISTS subscribers (
   id SERIAL PRIMARY KEY,
   email TEXT NOT NULL UNIQUE,
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','unsubscribed')),
+  unsubscribe_token TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Idempotent backfill for existing tables
+ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS unsubscribe_token TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_subscribers_token ON subscribers (unsubscribe_token);
 
 CREATE TABLE IF NOT EXISTS newsletter_posts (
   id SERIAL PRIMARY KEY,

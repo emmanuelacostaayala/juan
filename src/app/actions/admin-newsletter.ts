@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { sql } from "@/lib/db";
 import { mailer, FROM, CONTACT_INBOX } from "@/lib/mail";
 import { getSession } from "@/lib/session";
+import { renderNewsletterEmail } from "@/lib/newsletter-template";
 
 export type PublishState = {
   ok: boolean;
@@ -11,6 +12,12 @@ export type PublishState = {
   recipients?: number;
   slug?: string;
 };
+
+const SITE = "https://juanandresromero.es";
+// Zoho free SMTP is rate-limited (50–500/h dynamic). Pace sends to keep us
+// well under the floor; for lists >100 we should switch to a transactional
+// email service (Resend/Postmark/SES) or Zoho Campaigns.
+const SEND_DELAY_MS = 250;
 
 function slugify(s: string): string {
   return s
@@ -22,44 +29,49 @@ function slugify(s: string): string {
     .slice(0, 80);
 }
 
-function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] ?? c),
-  );
+function unsubUrl(token: string) {
+  return `${SITE}/unsubscribe?t=${encodeURIComponent(token)}`;
+}
+function unsubPostUrl(token: string) {
+  return `${SITE}/api/unsubscribe?t=${encodeURIComponent(token)}`;
 }
 
-function bodyToHtml(body: string): string {
-  // Render plain text body as paragraphs separated by blank lines.
-  return body
-    .split(/\n{2,}/)
-    .map((para) => `<p style="margin:0 0 1rem;line-height:1.65;color:#1a1a18">${escapeHtml(para).replace(/\n/g, "<br/>")}</p>`)
-    .join("\n");
+async function sleep(ms: number) {
+  return new Promise<void>((res) => setTimeout(res, ms));
 }
 
-async function chunkSend(
-  emails: string[],
-  subject: string,
-  html: string,
-  text: string,
-  size = 50,
-): Promise<number> {
-  let delivered = 0;
-  for (let i = 0; i < emails.length; i += size) {
-    const batch = emails.slice(i, i + size);
-    await Promise.allSettled(
-      batch.map((to) =>
-        mailer
-          .sendMail({ from: FROM, to, subject, html, text })
-          .then(() => {
-            delivered++;
-          })
-          .catch((err) => {
-            console.error("[newsletter] send failed for", to, err);
-          }),
-      ),
-    );
+type Sub = { email: string; unsubscribe_token: string };
+
+async function sendOne(
+  sub: Sub,
+  title: string,
+  body: string,
+): Promise<boolean> {
+  const url = unsubUrl(sub.unsubscribe_token);
+  const { html, text } = renderNewsletterEmail({
+    title,
+    body,
+    unsubscribeUrl: url,
+  });
+  try {
+    await mailer.sendMail({
+      from: FROM,
+      to: sub.email,
+      subject: title,
+      html,
+      text,
+      headers: {
+        "List-Unsubscribe": `<${unsubPostUrl(sub.unsubscribe_token)}>, <${url}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        "X-Auto-Response-Suppress": "All",
+        Precedence: "bulk",
+      },
+    });
+    return true;
+  } catch (err) {
+    console.error("[newsletter] send failed for", sub.email, err);
+    return false;
   }
-  return delivered;
 }
 
 export async function publishNewsletter(
@@ -78,8 +90,6 @@ export async function publishNewsletter(
   const baseSlug = slugify(title) || `post-${Date.now()}`;
   let slug = baseSlug;
   let suffix = 1;
-
-  // Ensure unique slug
   for (;;) {
     const conflict = await sql<{ count: number }[]>`
       SELECT COUNT(*)::int AS count FROM newsletter_posts WHERE slug = ${slug}
@@ -92,30 +102,29 @@ export async function publishNewsletter(
   let recipients = 0;
 
   if (sendNow) {
-    type SubRow = { email: string };
-    const subs = await sql<SubRow[]>`
-      SELECT email FROM subscribers WHERE status = 'active'
+    const subs = await sql<Sub[]>`
+      SELECT email, unsubscribe_token
+      FROM subscribers
+      WHERE status = 'active' AND unsubscribe_token IS NOT NULL
     `;
-    const emails = subs.map((r) => r.email);
 
-    const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:640px;color:#1a1a18">
-      <h1 style="font-size:28px;font-weight:500;letter-spacing:-0.02em;margin:0 0 1.25rem">${escapeHtml(title)}</h1>
-      ${bodyToHtml(body)}
-      <hr style="border:none;border-top:1px solid #e7e5e0;margin:2rem 0">
-      <p style="font-size:12px;color:#888;margin:0">Recibes este correo porque te suscribiste en juanandresromero.es</p>
-    </div>`;
-    const text = `${title}\n\n${body}\n\n—\nRecibes este correo porque te suscribiste en juanandresromero.es`;
+    // Sequential with small delay — gentle on Zoho's rate limit and on
+    // spam-pattern detectors. Sleep BEFORE each send except the first.
+    for (let i = 0; i < subs.length; i++) {
+      if (i > 0) await sleep(SEND_DELAY_MS);
+      const ok = await sendOne(subs[i], title, body);
+      if (ok) recipients++;
+    }
 
-    recipients = await chunkSend(emails, title, html, text);
-
-    // Send an internal copy to info@ so the team can preview the rendered email
-    const previewHtml = `<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:640px;color:#1a1a18">
-      <div style="background:#fff7e0;border:1px solid #f0e0a8;padding:0.75rem 1rem;border-radius:6px;font-size:13px;margin-bottom:1.25rem">
-        <strong>Copia interna</strong> · enviado a ${recipients} suscriptor${recipients === 1 ? "" : "es"}.
-      </div>
-      ${html}
-    </div>`;
-    const previewText = `[Copia interna · enviado a ${recipients} suscriptor${recipients === 1 ? "" : "es"}]\n\n${text}`;
+    // Internal preview copy to info@ — uses a sentinel token so the
+    // unsubscribe link in the preview won't unsubscribe a real subscriber.
+    const { html: previewHtml, text: previewText } = renderNewsletterEmail({
+      title,
+      body,
+      unsubscribeUrl: `${SITE}/unsubscribe`,
+      isPreview: true,
+      recipientsCount: recipients,
+    });
     try {
       await mailer.sendMail({
         from: FROM,

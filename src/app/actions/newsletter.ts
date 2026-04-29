@@ -1,5 +1,6 @@
 "use server";
 
+import crypto from "node:crypto";
 import { sql } from "@/lib/db";
 
 export type NewsletterState = {
@@ -8,6 +9,10 @@ export type NewsletterState = {
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function newToken(): string {
+  return crypto.randomBytes(24).toString("base64url");
+}
 
 export async function subscribeNewsletter(
   _prev: NewsletterState | null,
@@ -23,9 +28,11 @@ export async function subscribeNewsletter(
 
   try {
     await sql`
-      INSERT INTO subscribers (email, status)
-      VALUES (${email}, 'active')
-      ON CONFLICT (email) DO UPDATE SET status = 'active'
+      INSERT INTO subscribers (email, status, unsubscribe_token)
+      VALUES (${email}, 'active', ${newToken()})
+      ON CONFLICT (email) DO UPDATE SET
+        status = 'active',
+        unsubscribe_token = COALESCE(subscribers.unsubscribe_token, EXCLUDED.unsubscribe_token)
     `;
     return { ok: true };
   } catch (err) {
