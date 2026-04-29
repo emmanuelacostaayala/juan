@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import {
   publishNewsletter,
   type PublishState,
 } from "@/app/actions/admin-newsletter";
 import { logoutAdmin } from "@/app/actions/admin-auth";
+import { TEMPLATES, getTemplate } from "@/lib/newsletter-templates";
 
 const initial: PublishState = { ok: false };
 
@@ -28,6 +29,44 @@ export default function AdminDashboard({
   posts: Post[];
 }) {
   const [state, action, pending] = useActionState(publishNewsletter, initial);
+  const [templateId, setTemplateId] = useState("blank");
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [previewHtml, setPreviewHtml] = useState<string>("");
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const debounceRef = useRef<number | null>(null);
+
+  // Apply template content
+  function applyTemplate(id: string) {
+    setTemplateId(id);
+    const tpl = getTemplate(id);
+    setTitle(tpl.title);
+    setBody(tpl.body);
+  }
+
+  // Debounced live preview
+  useEffect(() => {
+    if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    debounceRef.current = window.setTimeout(async () => {
+      setPreviewLoading(true);
+      try {
+        const res = await fetch("/api/admin/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, body }),
+        });
+        if (res.ok) {
+          const j = await res.json();
+          setPreviewHtml(j.html ?? "");
+        }
+      } finally {
+        setPreviewLoading(false);
+      }
+    }, 350);
+    return () => {
+      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    };
+  }, [title, body]);
 
   return (
     <div className="admin">
@@ -53,49 +92,87 @@ export default function AdminDashboard({
       </section>
 
       <section className="admin__compose">
-        <h2 className="admin__h2">Nueva publicación</h2>
-        <form action={action} className="admin__form">
-          <label className="admin__label">
-            <span>Título</span>
-            <input
-              name="title"
-              type="text"
-              required
-              maxLength={140}
-              placeholder="Reflexiones de marzo"
-              className="admin__input"
+        <div className="admin__compose-head">
+          <h2 className="admin__h2">Nueva publicación</h2>
+          <label className="admin__tpl-select">
+            <span>Plantilla</span>
+            <select
+              value={templateId}
+              onChange={(e) => applyTemplate(e.target.value)}
+            >
+              {TEMPLATES.map((t) => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <p className="admin__tpl-desc">
+          {getTemplate(templateId).description}
+        </p>
+
+        <div className="admin__split">
+          <form action={action} className="admin__form">
+            <label className="admin__label">
+              <span>Título</span>
+              <input
+                name="title"
+                type="text"
+                required
+                maxLength={140}
+                placeholder="Ej. Avances · Trimestre Q1"
+                className="admin__input"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </label>
+
+            <label className="admin__label">
+              <span>
+                Contenido <em className="admin__hint">(soporta Markdown: ## títulos, **negrita**, *cursiva*, [enlaces](url), &gt; citas, listas)</em>
+              </span>
+              <textarea
+                name="body"
+                required
+                rows={20}
+                placeholder="Escribe en Markdown..."
+                className="admin__textarea"
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+              />
+            </label>
+
+            <label className="admin__check">
+              <input type="checkbox" name="send" defaultChecked />
+              <span>Enviar por email a los suscriptores activos ahora</span>
+            </label>
+
+            {state.error && <p className="admin__error" role="alert">{state.error}</p>}
+            {state.ok && (
+              <p className="admin__success" role="status">
+                {state.recipients
+                  ? `Publicación creada y enviada a ${state.recipients} suscriptor(es).`
+                  : "Publicación guardada como borrador."}
+              </p>
+            )}
+
+            <button type="submit" className="admin__submit" disabled={pending}>
+              {pending ? "Publicando…" : "Publicar"}
+            </button>
+          </form>
+
+          <aside className="admin__preview">
+            <div className="admin__preview-head">
+              <span className="admin__preview-tag">Preview</span>
+              {previewLoading && <span className="admin__preview-status">actualizando…</span>}
+            </div>
+            <iframe
+              title="Preview del email"
+              srcDoc={previewHtml}
+              className="admin__preview-frame"
+              sandbox=""
             />
-          </label>
-
-          <label className="admin__label">
-            <span>Contenido</span>
-            <textarea
-              name="body"
-              required
-              rows={14}
-              placeholder="Escribe aquí. Líneas en blanco crean párrafos."
-              className="admin__textarea"
-            />
-          </label>
-
-          <label className="admin__check">
-            <input type="checkbox" name="send" defaultChecked />
-            <span>Enviar por email a los suscriptores activos ahora</span>
-          </label>
-
-          {state.error && <p className="admin__error" role="alert">{state.error}</p>}
-          {state.ok && (
-            <p className="admin__success" role="status">
-              {state.recipients
-                ? `Publicación creada y enviada a ${state.recipients} suscriptor(es).`
-                : "Publicación guardada como borrador."}
-            </p>
-          )}
-
-          <button type="submit" className="admin__submit" disabled={pending}>
-            {pending ? "Publicando…" : "Publicar"}
-          </button>
-        </form>
+          </aside>
+        </div>
       </section>
 
       <section className="admin__posts">
@@ -125,7 +202,7 @@ export default function AdminDashboard({
 
       <style jsx>{`
         .admin {
-          max-width: 880px;
+          max-width: 1240px;
           margin: 0 auto;
           padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 4vw, 2rem);
           color: var(--color-ink);
@@ -162,9 +239,7 @@ export default function AdminDashboard({
           cursor: pointer;
           transition: background 180ms var(--ease-out);
         }
-        .admin__logout:hover {
-          background: rgba(0,0,0,0.05);
-        }
+        .admin__logout:hover { background: rgba(0,0,0,0.05); }
         .admin__stats {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
@@ -201,6 +276,46 @@ export default function AdminDashboard({
         .admin__compose {
           margin-bottom: 3rem;
         }
+        .admin__compose-head {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 1rem;
+          margin-bottom: 0.25rem;
+          flex-wrap: wrap;
+        }
+        .admin__tpl-select {
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+          font-size: var(--fs-13);
+          font-weight: 500;
+          letter-spacing: 0.02em;
+        }
+        .admin__tpl-select select {
+          padding: 0.5rem 0.75rem;
+          border: 1px solid rgba(0,0,0,0.12);
+          border-radius: var(--radius-sm);
+          font-family: var(--font-sans);
+          font-size: var(--fs-14);
+          background: var(--color-white);
+          color: var(--color-ink);
+          min-width: 220px;
+        }
+        .admin__tpl-desc {
+          margin: 0 0 1.5rem;
+          font-size: var(--fs-13);
+          color: var(--fg-muted);
+          font-style: italic;
+        }
+        .admin__split {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+          gap: 1.5rem;
+        }
+        @media (max-width: 1000px) {
+          .admin__split { grid-template-columns: 1fr; }
+        }
         .admin__form {
           display: flex;
           flex-direction: column;
@@ -213,6 +328,14 @@ export default function AdminDashboard({
           font-size: var(--fs-13);
           font-weight: 500;
           letter-spacing: 0.02em;
+        }
+        .admin__hint {
+          font-size: var(--fs-13);
+          font-weight: 400;
+          font-style: normal;
+          color: var(--fg-muted);
+          letter-spacing: 0;
+          text-transform: none;
         }
         .admin__input,
         .admin__textarea {
@@ -229,7 +352,9 @@ export default function AdminDashboard({
         .admin__textarea {
           resize: vertical;
           line-height: 1.55;
-          font-family: var(--font-sans);
+          font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+          font-size: 14px;
+          min-height: 360px;
         }
         .admin__input:focus,
         .admin__textarea:focus {
@@ -257,11 +382,40 @@ export default function AdminDashboard({
           text-transform: uppercase;
         }
         .admin__submit:disabled { opacity: 0.6; }
-        .admin__list {
+
+        .admin__preview {
           display: flex;
           flex-direction: column;
           gap: 0.5rem;
+          position: sticky;
+          top: 1rem;
+          align-self: start;
         }
+        .admin__preview-head {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .admin__preview-tag {
+          font-size: var(--fs-13);
+          font-weight: 500;
+          letter-spacing: 0.02em;
+        }
+        .admin__preview-status {
+          font-size: 11px;
+          color: var(--fg-muted);
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+        .admin__preview-frame {
+          width: 100%;
+          height: 640px;
+          border: 1px solid rgba(0,0,0,0.08);
+          border-radius: var(--radius-md);
+          background: #f6f4ef;
+        }
+
+        .admin__list { display: flex; flex-direction: column; gap: 0.5rem; }
         .admin__item {
           display: flex;
           justify-content: space-between;
@@ -272,11 +426,7 @@ export default function AdminDashboard({
           border-radius: var(--radius-md);
           background: var(--color-white);
         }
-        .admin__item-title {
-          margin: 0;
-          font-weight: 500;
-          font-size: var(--fs-16);
-        }
+        .admin__item-title { margin: 0; font-weight: 500; font-size: var(--fs-16); }
         .admin__item-meta {
           margin: 0.25rem 0 0;
           font-size: var(--fs-13);
