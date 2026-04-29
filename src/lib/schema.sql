@@ -18,10 +18,14 @@ CREATE TABLE IF NOT EXISTS newsletter_posts (
   slug TEXT NOT NULL UNIQUE,
   title TEXT NOT NULL,
   body TEXT NOT NULL,
+  cover_image_url TEXT,
   sent_at TIMESTAMPTZ,
   recipients_count INTEGER,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Idempotent column add for already-existing tables
+ALTER TABLE newsletter_posts ADD COLUMN IF NOT EXISTS cover_image_url TEXT;
 
 CREATE TABLE IF NOT EXISTS admin_codes (
   email TEXT NOT NULL,

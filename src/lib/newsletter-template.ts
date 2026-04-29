@@ -93,12 +93,14 @@ export function renderNewsletterEmail({
   title,
   body,
   unsubscribeUrl,
+  coverImageUrl,
   isPreview = false,
   recipientsCount,
 }: {
   title: string;
   body: string;
   unsubscribeUrl: string;
+  coverImageUrl?: string | null;
   isPreview?: boolean;
   recipientsCount?: number;
 }): { html: string; text: string } {
@@ -111,6 +113,9 @@ export function renderNewsletterEmail({
     : "";
 
   const bodyHtml = markdownToHtml(body);
+  const coverHtml = coverImageUrl
+    ? `<tr><td style="padding:0;"><img src="${escapeHtml(coverImageUrl)}" alt="${escapeHtml(title)}" style="display:block;width:100%;max-width:640px;height:auto;border:0;outline:none;text-decoration:none;" /></td></tr>`
+    : "";
 
   const html = `<!doctype html>
 <html lang="es">
@@ -127,6 +132,7 @@ export function renderNewsletterEmail({
   <tr>
     <td align="center" style="padding:32px 16px;">
       <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;">
+        ${coverHtml}
         <tr>
           <td style="padding:32px 40px 8px;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0">

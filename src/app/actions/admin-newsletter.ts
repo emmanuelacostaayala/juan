@@ -46,12 +46,14 @@ async function sendOne(
   sub: Sub,
   title: string,
   body: string,
+  coverImageUrl: string | null,
 ): Promise<boolean> {
   const url = unsubUrl(sub.unsubscribe_token);
   const { html, text } = renderNewsletterEmail({
     title,
     body,
     unsubscribeUrl: url,
+    coverImageUrl,
   });
   try {
     await mailer.sendMail({
@@ -83,6 +85,7 @@ export async function publishNewsletter(
 
   const title = String(formData.get("title") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
+  const coverImageUrl = String(formData.get("coverImageUrl") ?? "").trim() || null;
   const sendNow = formData.get("send") === "on";
 
   if (!title || !body) return { ok: false, error: "Título y contenido son obligatorios." };
@@ -112,7 +115,7 @@ export async function publishNewsletter(
     // spam-pattern detectors. Sleep BEFORE each send except the first.
     for (let i = 0; i < subs.length; i++) {
       if (i > 0) await sleep(SEND_DELAY_MS);
-      const ok = await sendOne(subs[i], title, body);
+      const ok = await sendOne(subs[i], title, body, coverImageUrl);
       if (ok) recipients++;
     }
 
@@ -122,6 +125,7 @@ export async function publishNewsletter(
       title,
       body,
       unsubscribeUrl: `${SITE}/unsubscribe`,
+      coverImageUrl,
       isPreview: true,
       recipientsCount: recipients,
     });
@@ -141,8 +145,8 @@ export async function publishNewsletter(
   const sentAt = sendNow ? new Date() : null;
 
   await sql`
-    INSERT INTO newsletter_posts (slug, title, body, sent_at, recipients_count)
-    VALUES (${slug}, ${title}, ${body}, ${sentAt}, ${sendNow ? recipients : null})
+    INSERT INTO newsletter_posts (slug, title, body, cover_image_url, sent_at, recipients_count)
+    VALUES (${slug}, ${title}, ${body}, ${coverImageUrl}, ${sentAt}, ${sendNow ? recipients : null})
   `;
 
   revalidatePath("/admin");

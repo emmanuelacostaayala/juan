@@ -32,9 +32,13 @@ export default function AdminDashboard({
   const [templateId, setTemplateId] = useState("blank");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [coverImageUrl, setCoverImageUrl] = useState("");
+  const [uploading, setUploading] = useState<"cover" | "inline" | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [previewHtml, setPreviewHtml] = useState<string>("");
   const [previewLoading, setPreviewLoading] = useState(false);
   const debounceRef = useRef<number | null>(null);
+  const bodyRef = useRef<HTMLTextAreaElement | null>(null);
 
   // Apply template content
   function applyTemplate(id: string) {
@@ -53,7 +57,7 @@ export default function AdminDashboard({
         const res = await fetch("/api/admin/preview", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, body }),
+          body: JSON.stringify({ title, body, coverImageUrl }),
         });
         if (res.ok) {
           const j = await res.json();
@@ -66,7 +70,55 @@ export default function AdminDashboard({
     return () => {
       if (debounceRef.current) window.clearTimeout(debounceRef.current);
     };
-  }, [title, body]);
+  }, [title, body, coverImageUrl]);
+
+  async function uploadFile(file: File): Promise<string | null> {
+    setUploadError(null);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+    const j = await res.json();
+    if (!res.ok) {
+      setUploadError(j.error ?? "Error subiendo imagen.");
+      return null;
+    }
+    return j.url as string;
+  }
+
+  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setUploading("cover");
+    const url = await uploadFile(f);
+    setUploading(null);
+    e.target.value = "";
+    if (url) setCoverImageUrl(url);
+  }
+
+  async function handleInlineUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setUploading("inline");
+    const url = await uploadFile(f);
+    setUploading(null);
+    e.target.value = "";
+    if (!url) return;
+    const ta = bodyRef.current;
+    const md = `\n\n![${f.name.replace(/\.[^.]+$/, "")}](${url})\n\n`;
+    if (ta) {
+      const start = ta.selectionStart ?? body.length;
+      const end = ta.selectionEnd ?? body.length;
+      const next = body.slice(0, start) + md + body.slice(end);
+      setBody(next);
+      requestAnimationFrame(() => {
+        ta.focus();
+        const pos = start + md.length;
+        ta.setSelectionRange(pos, pos);
+      });
+    } else {
+      setBody((b) => b + md);
+    }
+  }
 
   return (
     <div className="admin">
@@ -126,11 +178,46 @@ export default function AdminDashboard({
               />
             </label>
 
+            <div className="admin__label">
+              <span>Imagen de portada <em className="admin__hint">(opcional, hasta 5 MB)</em></span>
+              <input type="hidden" name="coverImageUrl" value={coverImageUrl} />
+              {coverImageUrl ? (
+                <div className="admin__cover-row">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={coverImageUrl} alt="Portada" className="admin__cover-thumb" />
+                  <div className="admin__cover-actions">
+                    <code className="admin__cover-url">{coverImageUrl.split("/").slice(-1)[0]}</code>
+                    <button
+                      type="button"
+                      className="admin__link-btn"
+                      onClick={() => setCoverImageUrl("")}
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="admin__upload-row">
+                  <label className="admin__file-btn">
+                    {uploading === "cover" ? "Subiendo…" : "Subir portada"}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                      hidden
+                      onChange={handleCoverUpload}
+                      disabled={uploading !== null}
+                    />
+                  </label>
+                </div>
+              )}
+            </div>
+
             <label className="admin__label">
               <span>
-                Contenido <em className="admin__hint">(soporta Markdown: ## títulos, **negrita**, *cursiva*, [enlaces](url), &gt; citas, listas)</em>
+                Contenido <em className="admin__hint">(Markdown: ## títulos · **negrita** · *cursiva* · [enlace](url) · &gt; cita · - listas · ![alt](url) imagen)</em>
               </span>
               <textarea
+                ref={bodyRef}
                 name="body"
                 required
                 rows={20}
@@ -139,7 +226,21 @@ export default function AdminDashboard({
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
               />
+              <div className="admin__upload-row">
+                <label className="admin__file-btn admin__file-btn--small">
+                  {uploading === "inline" ? "Subiendo…" : "Insertar imagen en el cuerpo"}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                    hidden
+                    onChange={handleInlineUpload}
+                    disabled={uploading !== null}
+                  />
+                </label>
+              </div>
             </label>
+
+            {uploadError && <p className="admin__error" role="alert">{uploadError}</p>}
 
             <label className="admin__check">
               <input type="checkbox" name="send" defaultChecked />
@@ -370,6 +471,67 @@ export default function AdminDashboard({
         }
         .admin__error { color: #c0392b; font-size: var(--fs-13); margin: 0; }
         .admin__success { color: #14855e; font-size: var(--fs-13); margin: 0; }
+        .admin__upload-row {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+          margin-top: 0.5rem;
+        }
+        .admin__file-btn {
+          display: inline-flex;
+          align-items: center;
+          padding: 0.625rem 1rem;
+          background: var(--color-cream);
+          color: var(--color-ink);
+          border-radius: var(--radius-sm);
+          font-size: var(--fs-13);
+          font-weight: 500;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: background 180ms var(--ease-out);
+          border: 1px solid rgba(0,0,0,0.08);
+        }
+        .admin__file-btn:hover { background: rgba(0,0,0,0.05); }
+        .admin__file-btn--small { font-size: 11px; padding: 0.4rem 0.75rem; letter-spacing: 0.06em; }
+        .admin__cover-row {
+          display: flex;
+          gap: 0.875rem;
+          align-items: flex-start;
+          padding: 0.75rem;
+          background: var(--color-cream);
+          border-radius: var(--radius-sm);
+        }
+        .admin__cover-thumb {
+          width: 96px;
+          height: 96px;
+          object-fit: cover;
+          border-radius: var(--radius-sm);
+        }
+        .admin__cover-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+          font-size: var(--fs-13);
+          flex: 1;
+          min-width: 0;
+        }
+        .admin__cover-url {
+          font-family: Menlo, Monaco, Consolas, monospace;
+          font-size: 12px;
+          color: var(--fg-muted);
+          word-break: break-all;
+        }
+        .admin__link-btn {
+          background: none;
+          border: none;
+          padding: 0;
+          color: #c0392b;
+          font-size: var(--fs-13);
+          cursor: pointer;
+          align-self: flex-start;
+          text-decoration: underline;
+        }
         .admin__submit {
           align-self: flex-start;
           padding: 1rem 2rem;

@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  let payload: { title?: string; body?: string };
+  let payload: { title?: string; body?: string; coverImageUrl?: string | null };
   try {
     payload = await req.json();
   } catch {
@@ -20,11 +20,13 @@ export async function POST(req: NextRequest) {
 
   const title = String(payload.title ?? "").trim() || "Sin título";
   const body = String(payload.body ?? "").trim() || "_(vacío)_";
+  const coverImageUrl = payload.coverImageUrl?.trim() || null;
 
   const { html } = renderNewsletterEmail({
     title,
     body,
     unsubscribeUrl: "https://juanandresromero.es/unsubscribe",
+    coverImageUrl,
   });
 
   return NextResponse.json({ html });
