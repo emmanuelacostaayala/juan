@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -51,11 +49,7 @@ export default function RootLayout({
         />
         <style>{`:root { --font-satoshi: 'Satoshi', system-ui, sans-serif; }`}</style>
       </head>
-      <body>
-        <Header />
-        {children}
-        <Footer />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
