@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Reveal } from "@/lib/motion";
 
 const YOUTUBE_URL = "https://youtube.com/@proximamentepodcast?si=zrACi4EgJD7SAwlH";
@@ -37,7 +38,26 @@ export default function PodcastBlock() {
           </Reveal>
 
           <Reveal delay={0.05}>
-            <h2 className="podcast__title">Próximamente.</h2>
+            <a
+              href={SPOTIFY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="podcast__cover-link"
+              aria-label="Ir al show de Próxima Mente en Spotify"
+            >
+              <Image
+                src="/brand/proxima-mente-cover.jpg"
+                alt="Próxima Mente — podcast"
+                width={300}
+                height={300}
+                className="podcast__cover"
+                priority={false}
+              />
+            </a>
+          </Reveal>
+
+          <Reveal delay={0.08}>
+            <h2 className="podcast__title">Próxima Mente.</h2>
           </Reveal>
 
           <Reveal delay={0.1}>
@@ -74,7 +94,7 @@ export default function PodcastBlock() {
 
         <Reveal delay={0.2} className="podcast__embed-wrap">
           <iframe
-            title="Próximamente Podcast en Spotify — últimos episodios"
+            title="Próxima Mente Podcast en Spotify — últimos episodios"
             src={SPOTIFY_EMBED}
             width="100%"
             height="420"
@@ -116,6 +136,23 @@ export default function PodcastBlock() {
           flex-direction: column;
           align-items: flex-start;
           gap: 1.25rem;
+        }
+        .podcast__cover-link {
+          display: inline-block;
+          line-height: 0;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+          transition: transform 220ms var(--ease-out);
+        }
+        .podcast__cover-link:hover {
+          transform: translateY(-2px) scale(1.01);
+        }
+        .podcast__cover {
+          display: block;
+          width: 180px;
+          height: 180px;
+          object-fit: cover;
         }
         .podcast__tag {
           color: var(--color-accent);

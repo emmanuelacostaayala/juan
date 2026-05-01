@@ -40,7 +40,7 @@ export default function ContactSection() {
         <div className="contacto__form-wrap">
           <header className="contacto__head">
             <p className="uppercase-tag contacto__tag">Contacto</p>
-            <h2 className="contacto__title">Colaboremos.</h2>
+            <h2 className="contacto__title">Contáctanos.</h2>
             <p className="contacto__sub">
               Cuéntame en qué estás trabajando — prensa, instituciones o
               colaboraciones, todo es bienvenido.
