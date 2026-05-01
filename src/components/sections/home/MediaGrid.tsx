@@ -6,12 +6,28 @@ import { Reveal } from "@/lib/motion";
 
 const ARTICLES = [
   {
+    tag: "Análisis",
+    title: "Clerhp se prepara para 2026 con un balance sólido, preventas al alza y una marca más visible",
+    outlet: "Estrategias de Inversión",
+    date: "Marzo 2026",
+    href: "https://www.estrategiasdeinversion.com/analisis/bolsa-y-mercados/el-experto-opina/clerhp-se-prepara-para-2026-con-un-balance-solido-n-862849",
+    image: images.thumb1,
+  },
+  {
     tag: "Reportaje",
     title: "Larimar City & Resort entra en el porfolio de inversión internacional de República Dominicana",
     outlet: "Murcia Diario",
     date: "Junio 2025",
     href: "https://www.murciadiario.com/articulo/empresas/larimar-triuf/20250613112354128802.html",
-    image: images.thumb1,
+    image: images.thumb2,
+  },
+  {
+    tag: "Informe",
+    title: "Larimar City & Resort representa hoy una de las mejores oportunidades de inversión inmobiliaria en el Caribe",
+    outlet: "Estrategias de Inversión",
+    date: "Mayo 2025",
+    href: "https://www.estrategiasdeinversion.com/analisis/bolsa-y-mercados/informes/clerhp-larimar-city-resort-representa-hoy-una-n-817479",
+    image: images.thumb3,
   },
   {
     tag: "Reportaje",
@@ -19,7 +35,15 @@ const ARTICLES = [
     outlet: "Murcia Plaza",
     date: "Mayo 2025",
     href: "https://murciaplaza.com/murciaplaza/empresas-murcia/clerhp-inicia-la-construccion-de-la-principal-area-residencial-de-larimar-city-en-la-republica-dominicana",
-    image: images.thumb2,
+    image: images.thumb4,
+  },
+  {
+    tag: "Noticia",
+    title: "Larimar City & Resort impulsa su expansión en Europa con nueva sede en Málaga",
+    outlet: "Estrategias de Inversión",
+    date: "2025",
+    href: "https://www.estrategiasdeinversion.com/actualidad/noticias/bolsa-espana/larimar-city-resort-impulsa-su-expansion-en-europa-n-864393",
+    image: images.thumb5,
   },
   {
     tag: "Entrevista",
@@ -27,7 +51,15 @@ const ARTICLES = [
     outlet: "Revista Consejeros",
     date: "Febrero 2025",
     href: "https://revistaconsejeros.com/sumario/entrevistas/consejeros/juan-andres-romero-consejero-delegado-de-clerhp/",
-    image: images.thumb3,
+    image: images.thumb6,
+  },
+  {
+    tag: "Vídeo",
+    title: "El megaproyecto Larimar dispara las oportunidades de crecimiento de Clerhp",
+    outlet: "Estrategias de Inversión · YouTube",
+    date: "Marzo 2025",
+    href: "https://www.youtube.com/watch?v=7_62UxU11pM",
+    image: images.thumb1,
   },
   {
     tag: "Reportaje",
@@ -35,7 +67,7 @@ const ARTICLES = [
     outlet: "Empresas de Murcia",
     date: "2024",
     href: "https://murcia.empresas.de/forbes-se-fija-en-larimar-city-el-gran-proyecto-de-clerhp-en-la-republica-dominicana/",
-    image: images.thumb4,
+    image: images.thumb2,
   },
   {
     tag: "Reportaje",
@@ -43,15 +75,7 @@ const ARTICLES = [
     outlet: "Elite Murcia",
     date: "2024",
     href: "https://elitemurcia.es/la-murciana-clerhp-ianugura-larimar-city-resort-la-primera-smart-city-de-republica-dominicana/",
-    image: images.thumb5,
-  },
-  {
-    tag: "Reportaje",
-    title: "De Murcia al Caribe para levantar la primera smart city del Caribe",
-    outlet: "El Economista",
-    date: "Febrero 2023",
-    href: "https://www.eleconomista.es/vivienda-inmobiliario/noticias/12166542/02/23/De-Murcia-al-Caribe-para-levantar-mas-de-22000-viviendas-.html",
-    image: images.thumb6,
+    image: images.thumb3,
   },
 ];
 

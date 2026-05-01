@@ -8,6 +8,14 @@ import { motion } from "framer-motion";
 
 const POSTS = [
   {
+    tag: "Análisis · Estrategias de Inversión",
+    title: "Clerhp se prepara para 2026 con un balance sólido, preventas al alza y una marca más visible",
+    date: "Marzo 2026",
+    href: "https://www.estrategiasdeinversion.com/analisis/bolsa-y-mercados/el-experto-opina/clerhp-se-prepara-para-2026-con-un-balance-solido-n-862849",
+    image: images.portraitExpoTalk,
+    imgAlt: "Juan Andrés Romero, presidente de Clerhp",
+  },
+  {
     tag: "Reportaje · Murcia Diario",
     title: "Larimar City & Resort entra en el porfolio de inversión internacional de República Dominicana",
     date: "Junio 2025",
@@ -16,20 +24,12 @@ const POSTS = [
     imgAlt: "Larimar City, vista del territorio",
   },
   {
-    tag: "Reportaje · Murcia Plaza",
-    title: "Clerhp inicia la construcción del área residencial principal de Larimar City",
-    date: "Mayo 2025",
-    href: "https://murciaplaza.com/murciaplaza/empresas-murcia/clerhp-inicia-la-construccion-de-la-principal-area-residencial-de-larimar-city-en-la-republica-dominicana",
+    tag: "Vídeo · Estrategias de Inversión",
+    title: "El megaproyecto Larimar dispara las oportunidades de crecimiento de Clerhp",
+    date: "Marzo 2025",
+    href: "https://www.youtube.com/watch?v=7_62UxU11pM",
     image: images.portraitConstruction,
-    imgAlt: "Visita de obra de Larimar City",
-  },
-  {
-    tag: "Entrevista · Revista Consejeros",
-    title: "Juan Andrés Romero, consejero delegado de Clerhp",
-    date: "Febrero 2025",
-    href: "https://revistaconsejeros.com/sumario/entrevistas/consejeros/juan-andres-romero-consejero-delegado-de-clerhp/",
-    image: images.portraitExpoTalk,
-    imgAlt: "Juan Andrés Romero en entrevista",
+    imgAlt: "Entrevista en vídeo a Juan Andrés Romero",
   },
 ];
 
