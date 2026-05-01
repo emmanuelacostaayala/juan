@@ -6,45 +6,51 @@ import { Reveal } from "@/lib/motion";
 
 const ARTICLES = [
   {
-    tag: "Opinión",
-    title: "Proyectos que transforman territorios",
-    outlet: "Expansión",
-    date: "Marzo 2026",
+    tag: "Reportaje",
+    title: "Larimar City & Resort entra en el porfolio de inversión internacional de República Dominicana",
+    outlet: "Murcia Diario",
+    date: "Junio 2025",
+    href: "https://www.murciadiario.com/articulo/empresas/larimar-triuf/20250613112354128802.html",
     image: images.thumb1,
   },
   {
-    tag: "Entrevista",
-    title: "Una nueva forma de construir ciudad",
-    outlet: "Vozpópuli",
-    date: "Febrero 2026",
+    tag: "Reportaje",
+    title: "Clerhp inicia la construcción del área residencial principal de Larimar City",
+    outlet: "Murcia Plaza",
+    date: "Mayo 2025",
+    href: "https://murciaplaza.com/murciaplaza/empresas-murcia/clerhp-inicia-la-construccion-de-la-principal-area-residencial-de-larimar-city-en-la-republica-dominicana",
     image: images.thumb2,
   },
   {
-    tag: "Reportaje",
-    title: "CLERHP y la ingeniería que mira lejos",
-    outlet: "La Razón",
-    date: "Enero 2026",
+    tag: "Entrevista",
+    title: "Juan Andrés Romero, consejero delegado de Clerhp",
+    outlet: "Revista Consejeros",
+    date: "Febrero 2025",
+    href: "https://revistaconsejeros.com/sumario/entrevistas/consejeros/juan-andres-romero-consejero-delegado-de-clerhp/",
     image: images.thumb3,
   },
   {
-    tag: "Opinión",
-    title: "Arquitectura con visión de legado",
-    outlet: "El Mundo",
-    date: "Diciembre 2025",
+    tag: "Reportaje",
+    title: "Forbes se fija en Larimar City, el gran proyecto de Clerhp en la República Dominicana",
+    outlet: "Empresas de Murcia",
+    date: "2024",
+    href: "https://murcia.empresas.de/forbes-se-fija-en-larimar-city-el-gran-proyecto-de-clerhp-en-la-republica-dominicana/",
     image: images.thumb4,
   },
   {
-    tag: "Entrevista",
-    title: "Larimar City: el destino que viene",
-    outlet: "ABC",
-    date: "Noviembre 2025",
+    tag: "Reportaje",
+    title: "La murciana CLERHP inaugura Larimar City & Resort, la primera smart city de República Dominicana",
+    outlet: "Elite Murcia",
+    date: "2024",
+    href: "https://elitemurcia.es/la-murciana-clerhp-ianugura-larimar-city-resort-la-primera-smart-city-de-republica-dominicana/",
     image: images.thumb5,
   },
   {
     tag: "Reportaje",
-    title: "Construir desde el territorio",
-    outlet: "Cinco Días",
-    date: "Octubre 2025",
+    title: "De Murcia al Caribe para levantar la primera smart city del Caribe",
+    outlet: "El Economista",
+    date: "Febrero 2023",
+    href: "https://www.eleconomista.es/vivienda-inmobiliario/noticias/12166542/02/23/De-Murcia-al-Caribe-para-levantar-mas-de-22000-viviendas-.html",
     image: images.thumb6,
   },
 ];
@@ -70,21 +76,28 @@ export default function MediaGrid() {
           {ARTICLES.map((a, i) => (
             <Reveal key={a.title} delay={0.04 * i}>
               <li className="media__item">
-                <div className="media__cover">
-                  <Image
-                    src={a.image}
-                    alt={`${a.tag} en ${a.outlet}: ${a.title}`}
-                    fill
-                    sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 30vw"
-                    className="media__img"
-                  />
-                </div>
-                <div className="media__body">
-                  <span className="media__meta">
-                    {a.tag} · {a.outlet} · {a.date}
-                  </span>
-                  <h3 className="media__item-title">{a.title}</h3>
-                </div>
+                <a
+                  href={a.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="media__link"
+                >
+                  <div className="media__cover">
+                    <Image
+                      src={a.image}
+                      alt={`${a.tag} en ${a.outlet}: ${a.title}`}
+                      fill
+                      sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 30vw"
+                      className="media__img"
+                    />
+                  </div>
+                  <div className="media__body">
+                    <span className="media__meta">
+                      {a.tag} · {a.outlet} · {a.date}
+                    </span>
+                    <h3 className="media__item-title">{a.title}</h3>
+                  </div>
+                </a>
               </li>
             </Reveal>
           ))}
@@ -128,12 +141,17 @@ export default function MediaGrid() {
         .media__item {
           display: flex;
           flex-direction: column;
-          gap: 1rem;
           transition: transform 220ms var(--ease-out);
-          cursor: pointer;
         }
         .media__item:hover {
           transform: translateY(-4px);
+        }
+        .media__link {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          color: inherit;
+          text-decoration: none;
         }
         .media__cover {
           position: relative;

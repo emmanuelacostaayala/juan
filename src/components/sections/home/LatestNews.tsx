@@ -8,28 +8,28 @@ import { motion } from "framer-motion";
 
 const POSTS = [
   {
-    tag: "Opinión",
-    title: "La arquitectura como motor de transformación social",
-    date: "Marzo 2026",
-    href: "/#articulos-y-medios",
-    image: images.portraitExpoTalk,
-    imgAlt: "Juan Andrés Romero hablando en EXPO",
-  },
-  {
-    tag: "Entrevista",
-    title: "Larimar City: construir una ciudad desde la idea",
-    date: "Febrero 2026",
-    href: "/#articulos-y-medios",
+    tag: "Reportaje · Murcia Diario",
+    title: "Larimar City & Resort entra en el porfolio de inversión internacional de República Dominicana",
+    date: "Junio 2025",
+    href: "https://www.murciadiario.com/articulo/empresas/larimar-triuf/20250613112354128802.html",
     image: images.larimarCommunity,
-    imgAlt: "Larimar City, vida a pie de lago",
+    imgAlt: "Larimar City, vista del territorio",
   },
   {
-    tag: "Reportaje",
-    title: "CLERHP: ingeniería con visión global",
-    date: "Enero 2026",
-    href: "/#articulos-y-medios",
+    tag: "Reportaje · Murcia Plaza",
+    title: "Clerhp inicia la construcción del área residencial principal de Larimar City",
+    date: "Mayo 2025",
+    href: "https://murciaplaza.com/murciaplaza/empresas-murcia/clerhp-inicia-la-construccion-de-la-principal-area-residencial-de-larimar-city-en-la-republica-dominicana",
     image: images.portraitConstruction,
-    imgAlt: "Visita de obra al atardecer",
+    imgAlt: "Visita de obra de Larimar City",
+  },
+  {
+    tag: "Entrevista · Revista Consejeros",
+    title: "Juan Andrés Romero, consejero delegado de Clerhp",
+    date: "Febrero 2025",
+    href: "https://revistaconsejeros.com/sumario/entrevistas/consejeros/juan-andres-romero-consejero-delegado-de-clerhp/",
+    image: images.portraitExpoTalk,
+    imgAlt: "Juan Andrés Romero en entrevista",
   },
 ];
 
@@ -53,7 +53,12 @@ export default function LatestNews() {
           <div className="latest__grid">
             {POSTS.map((p) => (
               <motion.div key={p.title} variants={fadeUp}>
-                <Link href={p.href} className="latest__card">
+                <a
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="latest__card"
+                >
                   <div className="latest__cover">
                     <Image
                       src={p.image}
@@ -68,7 +73,7 @@ export default function LatestNews() {
                     <span className="latest__meta">{p.tag} · {p.date}</span>
                     <h3 className="latest__card-title">{p.title}</h3>
                   </div>
-                </Link>
+                </a>
               </motion.div>
             ))}
           </div>
