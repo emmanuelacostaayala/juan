@@ -101,10 +101,10 @@ export default function Footer() {
 
           <div className="site-footer__wordmark-wrap">
             <Image
-              src="/brand/jar-wordmark.svg"
-              alt="Juan Andrés Romero"
-              width={1200}
-              height={140}
+              src="/brand/jar-wordmark.png"
+              alt="Juan Andrés Romero · Arquitecto"
+              width={1000}
+              height={135}
               priority={false}
               className="site-footer__wordmark-img"
             />
