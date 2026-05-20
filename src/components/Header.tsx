@@ -196,7 +196,7 @@ export default function Header() {
           display: inline-block;
           width: 12px;
           height: 12px;
-          background: var(--color-accent);
+          background: linear-gradient(135deg, #12C9F9 0%, #0CAFFE 50%, #0678FF 100%);
           border-radius: 2px;
           transition: transform 200ms var(--ease-out);
         }
