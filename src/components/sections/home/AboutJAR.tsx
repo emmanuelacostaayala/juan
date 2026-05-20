@@ -147,7 +147,7 @@ export default function AboutJAR() {
           max-width: 600px;
         }
         .about__values-tag {
-          color: var(--color-accent);
+          color: #0CAFFE;
           margin-bottom: 1rem;
         }
         .about__values-title {

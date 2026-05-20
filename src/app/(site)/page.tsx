@@ -6,6 +6,7 @@ import HeroIntro from "@/components/HeroIntro";
 import Hero from "@/components/sections/home/Hero";
 import AboutJAR from "@/components/sections/home/AboutJAR";
 import LarimarIntro from "@/components/sections/home/LarimarIntro";
+import LarimarProgress from "@/components/sections/home/LarimarProgress";
 import ClerhpBlock from "@/components/sections/home/ClerhpBlock";
 import VisionQuote from "@/components/sections/home/VisionQuote";
 import LatestNews from "@/components/sections/home/LatestNews";
@@ -37,6 +38,7 @@ export default function HomePage() {
         <Hero />
         <AboutJAR />
         <LarimarIntro />
+        <LarimarProgress />
         <ClerhpBlock />
         <VisionQuote />
         <LatestNews />

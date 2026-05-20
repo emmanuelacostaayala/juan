@@ -155,7 +155,7 @@ export default function PodcastBlock() {
           object-fit: cover;
         }
         .podcast__tag {
-          color: var(--color-accent);
+          color: #0CAFFE;
         }
         .podcast__title {
           font-family: var(--font-display);
