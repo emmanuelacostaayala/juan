@@ -92,14 +92,6 @@ const PROJECTS: Project[] = [
     alt: "Restaurante Limoncello — render exterior",
   },
   {
-    key: "sima",
-    title: "SIMA Larimar City",
-    description:
-      "Plan maestro de la primera fase: 3.000 viviendas con masterplan urbano, infraestructura técnica y servicios listos para escalar.",
-    image: `${RENDERS_DIR}/sima-01.jpg`,
-    alt: "SIMA Larimar City — masterplan vista aérea",
-  },
-  {
     key: "sonestas",
     title: "Larimar × Sonesta",
     description:
