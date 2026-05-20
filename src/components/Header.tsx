@@ -136,11 +136,16 @@ export default function Header() {
         :global(.site-header__logo-img) {
           display: block;
           width: auto;
-          height: 32px;
+          height: 48px;
+        }
+        @media (max-width: 900px) {
+          :global(.site-header__logo-img) {
+            height: 38px;
+          }
         }
         @media (max-width: 560px) {
           :global(.site-header__logo-img) {
-            height: 24px;
+            height: 30px;
           }
         }
         .site-header__nav {

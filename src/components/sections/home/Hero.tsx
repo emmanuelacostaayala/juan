@@ -70,7 +70,13 @@ export default function Hero() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`https://i.ytimg.com/vi/${YT_ID}/hqdefault.jpg`}
+                  src={`https://i.ytimg.com/vi/${YT_ID}/maxresdefault.jpg`}
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    if (img.src.includes("maxresdefault")) {
+                      img.src = `https://i.ytimg.com/vi/${YT_ID}/hqdefault.jpg`;
+                    }
+                  }}
                   alt="Juan Andrés Romero — vídeo de presentación"
                   className="home-hero__video-img"
                   loading="lazy"
@@ -141,6 +147,7 @@ export default function Hero() {
         .home-hero__quote {
           max-width: 30ch;
           margin: 0;
+          text-align: left;
         }
         .home-hero__quote-text {
           font-family: var(--font-serif);
@@ -149,7 +156,8 @@ export default function Hero() {
           font-size: clamp(var(--fs-18), 1.6vw, var(--fs-24));
           line-height: 1.35;
           color: var(--color-white);
-          margin: 0 0 1.25rem;
+          margin: 0 0 2rem;
+          text-align: left;
           text-wrap: balance;
           text-shadow: 0 1px 30px rgba(0,0,0,0.35);
         }
@@ -169,12 +177,12 @@ export default function Hero() {
           border-color: rgba(255,255,255,0.35);
         }
         .home-hero__video {
-          width: 280px;
+          width: 340px;
           align-self: end;
         }
         .home-hero__video-frame {
           position: relative;
-          aspect-ratio: 16/10;
+          aspect-ratio: 16/9;
           border-radius: var(--radius-md);
           overflow: hidden;
           background: #1a1a18;
@@ -282,11 +290,11 @@ export default function Hero() {
         }
         @media (max-width: 900px) {
           .home-hero__inner { grid-template-columns: 1fr; }
-          .home-hero__video { width: 220px; justify-self: end; }
+          .home-hero__video { width: 260px; justify-self: end; }
         }
         @media (max-width: 640px) {
           .home-hero__scroll { display: none; }
-          .home-hero__video { width: 180px; }
+          .home-hero__video { width: 200px; }
         }
       `}</style>
     </section>
