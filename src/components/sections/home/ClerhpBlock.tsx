@@ -43,7 +43,6 @@ export default function ClerhpBlock() {
               <motion.div key={p.num} variants={fadeUp} className="clerhp__pillar">
                 <div className="clerhp__pillar-top">
                   <GradientSquare size={18} />
-                  <div className="clerhp__divider" />
                 </div>
                 <h3 className="clerhp__pillar-title">{p.title}</h3>
                 <p className="clerhp__pillar-sub">{p.sub}</p>
@@ -112,12 +111,7 @@ export default function ClerhpBlock() {
           line-height: 1;
           color: var(--color-ink);
         }
-        .clerhp__divider {
-          flex: 1;
-          height: 1px;
-          background: rgba(25, 25, 23, 0.12);
-        }
-        .clerhp__pillar-title {
+.clerhp__pillar-title {
           font-size: clamp(var(--fs-24), 2.5vw, var(--fs-30));
           font-weight: 700;
           letter-spacing: -0.025em;
