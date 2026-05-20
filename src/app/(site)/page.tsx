@@ -13,6 +13,7 @@ import LatestNews from "@/components/sections/home/LatestNews";
 import Faqs from "@/components/sections/home/Faqs";
 import MediaGrid from "@/components/sections/home/MediaGrid";
 import PodcastBlock from "@/components/sections/home/PodcastBlock";
+import SocialBlock from "@/components/sections/home/SocialBlock";
 import ContactSection from "@/components/sections/home/ContactSection";
 import NewsletterBlock from "@/components/NewsletterBlock";
 
@@ -45,6 +46,7 @@ export default function HomePage() {
         <Faqs />
         <MediaGrid />
         <PodcastBlock />
+        <SocialBlock />
         <ContactSection />
         <NewsletterBlock />
       </main>
