@@ -190,7 +190,7 @@ export default function ContactSection() {
           margin: 0 auto;
         }
         .contacto__tag {
-          color: var(--color-accent);
+          color: #0CAFFE;
           margin-bottom: 1rem;
         }
         .contacto__title {
