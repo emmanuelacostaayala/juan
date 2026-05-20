@@ -70,16 +70,10 @@ export default function Hero() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`https://i.ytimg.com/vi/${YT_ID}/maxresdefault.jpg`}
-                  onError={(e) => {
-                    const img = e.currentTarget;
-                    if (img.src.includes("maxresdefault")) {
-                      img.src = `https://i.ytimg.com/vi/${YT_ID}/hqdefault.jpg`;
-                    }
-                  }}
+                  src={`https://i.ytimg.com/vi/${YT_ID}/hqdefault.jpg`}
                   alt="Juan Andrés Romero — vídeo de presentación"
                   className="home-hero__video-img"
-                  loading="lazy"
+                  loading="eager"
                 />
                 <span className="home-hero__play" aria-hidden="true">
                   <svg viewBox="0 0 24 24" width="18" height="18">
@@ -145,7 +139,7 @@ export default function Hero() {
           gap: 2rem;
         }
         .home-hero__quote {
-          max-width: 30ch;
+          max-width: 26ch;
           margin: 0;
           text-align: left;
         }
@@ -158,7 +152,6 @@ export default function Hero() {
           color: var(--color-white);
           margin: 0 0 2rem;
           text-align: left;
-          text-wrap: balance;
           text-shadow: 0 1px 30px rgba(0,0,0,0.35);
         }
         .home-hero__link {
