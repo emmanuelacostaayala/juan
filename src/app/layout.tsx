@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -49,7 +50,12 @@ export default function RootLayout({
         />
         <style>{`:root { --font-satoshi: 'Satoshi', system-ui, sans-serif; }`}</style>
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Script id="metricool-tracker" strategy="afterInteractive">
+          {`function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"547f0bf411a3d6234bf9057f10642cab"})});`}
+        </Script>
+      </body>
     </html>
   );
 }
