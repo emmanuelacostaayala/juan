@@ -153,8 +153,11 @@ export default function Footer() {
         }
 
         .site-footer__wordmark-wrap {
-          padding-block: clamp(2.5rem, 6vw, 4rem) 1.5rem;
+          padding-block: clamp(2rem, 4vw, 3rem);
           text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .site-footer__wordmark-wrap :global(.site-footer__wordmark-img) {
           display: block;
