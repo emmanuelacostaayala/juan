@@ -66,8 +66,9 @@ export default function Header() {
           </nav>
 
           <div className="site-header__cta">
-            <Link href="/#contacto" className="btn btn--dark">
-              Contacto
+            <Link href="/#contacto" className="btn btn--dark site-header__contact">
+              <span>Contacto</span>
+              <span className="site-header__contact-dot" aria-hidden="true" />
             </Link>
           </div>
 
@@ -135,11 +136,11 @@ export default function Header() {
         :global(.site-header__logo-img) {
           display: block;
           width: auto;
-          height: 22px;
+          height: 32px;
         }
         @media (max-width: 560px) {
           :global(.site-header__logo-img) {
-            height: 18px;
+            height: 24px;
           }
         }
         .site-header__nav {
@@ -178,7 +179,10 @@ export default function Header() {
           transform: scaleX(1);
         }
         .site-header__cta :global(.btn) {
-          padding: 0.625rem 1.25rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.625rem;
+          padding: 0.625rem 1rem 0.625rem 1.25rem;
           font-size: var(--fs-13);
           letter-spacing: 0.06em;
           text-transform: uppercase;
@@ -187,6 +191,17 @@ export default function Header() {
         }
         .site-header__cta :global(.btn:hover) {
           background: var(--color-cream);
+        }
+        .site-header__cta :global(.site-header__contact-dot) {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          background: var(--color-accent);
+          border-radius: 2px;
+          transition: transform 200ms var(--ease-out);
+        }
+        .site-header__cta :global(.btn:hover .site-header__contact-dot) {
+          transform: scale(1.15);
         }
         .site-header__toggle {
           display: none;

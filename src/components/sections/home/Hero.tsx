@@ -3,11 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { images } from "@/lib/assets";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+const YT_ID = "AMHMpkYypsA";
 
 export default function Hero() {
+  const [playing, setPlaying] = useState(false);
+
   return (
     <section className="home-hero">
       <div className="home-hero__media" aria-hidden="true">
@@ -49,23 +53,39 @@ export default function Hero() {
           transition={{ duration: 0.9, ease: EASE, delay: 0.55 }}
         >
           <div className="home-hero__video-frame">
-            <Image
-              src={images.portraitDesk}
-              alt="Juan Andrés Romero en entrevista"
-              fill
-              sizes="(max-width: 720px) 200px, 320px"
-              className="home-hero__video-img"
-              style={{ objectFit: "cover", objectPosition: "center top" }}
-            />
-            <button type="button" className="home-hero__play" aria-label="Reproducir vídeo">
-              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                <path d="M8 5v14l11-7z" fill="currentColor" />
-              </svg>
-            </button>
-            <div className="home-hero__video-label">
-              <span>Juan Andrés Romero</span>
-              <span className="home-hero__video-badge">Larimar</span>
-            </div>
+            {playing ? (
+              <iframe
+                className="home-hero__iframe"
+                src={`https://www.youtube.com/embed/${YT_ID}?autoplay=1&rel=0&modestbranding=1`}
+                title="Juan Andrés Romero — CEO Larimar City"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <button
+                type="button"
+                className="home-hero__play-wrap"
+                onClick={() => setPlaying(true)}
+                aria-label="Reproducir vídeo de presentación"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://i.ytimg.com/vi/${YT_ID}/hqdefault.jpg`}
+                  alt="Juan Andrés Romero — vídeo de presentación"
+                  className="home-hero__video-img"
+                  loading="lazy"
+                />
+                <span className="home-hero__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18">
+                    <path d="M8 5v14l11-7z" fill="currentColor" />
+                  </svg>
+                </span>
+                <span className="home-hero__video-label">
+                  <span>Juan Andrés Romero</span>
+                  <span className="home-hero__video-badge">CEO Larimar City</span>
+                </span>
+              </button>
+            )}
           </div>
         </motion.aside>
       </div>
@@ -160,9 +180,33 @@ export default function Hero() {
           background: #1a1a18;
           box-shadow: 0 20px 60px rgba(0,0,0,0.35);
         }
-        .home-hero__video-frame :global(.home-hero__video-img) {
+        .home-hero__play-wrap {
+          position: absolute;
+          inset: 0;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          cursor: pointer;
+          display: block;
+        }
+        .home-hero__video-img {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
           object-fit: cover;
           object-position: center;
+          transition: transform 320ms var(--ease-out);
+        }
+        .home-hero__play-wrap:hover .home-hero__video-img {
+          transform: scale(1.04);
+        }
+        .home-hero__iframe {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          border: 0;
         }
         .home-hero__play {
           position: absolute;
@@ -180,7 +224,7 @@ export default function Hero() {
           padding-left: 3px;
           transition: transform 200ms var(--ease-out), background 200ms var(--ease-out);
         }
-        .home-hero__play:hover {
+        .home-hero__play-wrap:hover .home-hero__play {
           transform: translate(-50%,-50%) scale(1.08);
           background: var(--color-white);
         }
