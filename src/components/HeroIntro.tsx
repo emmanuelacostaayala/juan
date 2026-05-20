@@ -85,7 +85,7 @@ export default function HeroIntro() {
         .intro__name {
           display: block;
           font-family: 'NeueHaasDisplay', var(--font-display, sans-serif);
-          font-size: clamp(52px, 10vw, 144px);
+          font-size: clamp(36px, 7vw, 96px);
           font-weight: 500;
           letter-spacing: -0.04em;
           line-height: 0.88;
