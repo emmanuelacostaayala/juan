@@ -138,7 +138,7 @@ export default function Hero() {
           align-items: end;
           gap: 2rem;
         }
-        .home-hero__quote {
+        :global(.home-hero__quote) {
           max-width: 26ch;
           margin: 0;
           text-align: left;
@@ -154,7 +154,7 @@ export default function Hero() {
           text-align: left;
           text-shadow: 0 1px 30px rgba(0,0,0,0.35);
         }
-        .home-hero__link {
+        :global(.home-hero__link) {
           display: inline-block;
           font-size: var(--fs-13);
           font-weight: 600;
@@ -165,11 +165,11 @@ export default function Hero() {
           border-bottom: 1px solid rgba(255,255,255,0.7);
           transition: color 180ms var(--ease-out), border-color 180ms var(--ease-out);
         }
-        .home-hero__link:hover {
+        :global(.home-hero__link:hover) {
           color: rgba(255,255,255,0.65);
           border-color: rgba(255,255,255,0.35);
         }
-        .home-hero__video {
+        :global(.home-hero__video) {
           width: 340px;
           align-self: end;
         }
@@ -252,7 +252,7 @@ export default function Hero() {
           color: var(--color-white);
           border: 1px solid rgba(255,255,255,0.3);
         }
-        .home-hero__scroll {
+        :global(.home-hero__scroll) {
           position: absolute;
           right: var(--container-gutter);
           top: 50%;
@@ -283,11 +283,11 @@ export default function Hero() {
         }
         @media (max-width: 900px) {
           .home-hero__inner { grid-template-columns: 1fr; }
-          .home-hero__video { width: 260px; justify-self: end; }
+          :global(.home-hero__video) { width: 260px; justify-self: end; }
         }
         @media (max-width: 640px) {
-          .home-hero__scroll { display: none; }
-          .home-hero__video { width: 200px; }
+          :global(.home-hero__scroll) { display: none; }
+          :global(.home-hero__video) { width: 200px; }
         }
       `}</style>
     </section>
