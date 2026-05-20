@@ -153,14 +153,14 @@ export default function Footer() {
         }
 
         .site-footer__wordmark-wrap {
-          padding-block: clamp(3rem, 8vw, 5rem) 2rem;
+          padding-block: clamp(2.5rem, 6vw, 4rem) 1.5rem;
           text-align: center;
         }
         .site-footer__wordmark-wrap :global(.site-footer__wordmark-img) {
           display: block;
           width: 100%;
           height: auto;
-          max-width: 1100px;
+          max-width: 320px;
           margin: 0 auto;
         }
 

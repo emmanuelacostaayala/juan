@@ -1,9 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import RoleBadge from "./RoleBadge";
 
 const NAV_LINKS = [
   { label: "Sobre mí", href: "/#sobre-mi" },
@@ -42,13 +42,15 @@ export default function Header() {
     <>
       <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
         <div className="container site-header__row">
-          <Link href="/" className="site-header__logo" aria-label="Inicio">
-            <span className="site-header__wordmark-group">
-              <span className="site-header__wordmark">JUAN ANDRÉS ROMERO</span>
-              <span className="site-header__badge-sup">
-                <RoleBadge size="xs" />
-              </span>
-            </span>
+          <Link href="/" className="site-header__logo" aria-label="Juan Andrés Romero · Inicio">
+            <Image
+              src="/brand/jar-wordmark.png"
+              alt="Juan Andrés Romero · Arquitecto"
+              width={1000}
+              height={135}
+              priority
+              className="site-header__logo-img"
+            />
           </Link>
 
           <nav className="site-header__nav" aria-label="Principal">
@@ -128,43 +130,17 @@ export default function Header() {
         :global(.site-header__logo) {
           display: inline-flex;
           align-items: center;
-          gap: 0.5rem;
-          font-family: var(--font-display);
-          font-size: var(--fs-15);
-          font-weight: 700;
-          letter-spacing: 0.04em;
-          text-transform: uppercase;
           color: var(--color-white);
         }
-        .site-header__wordmark-group {
-          position: relative;
-          display: inline-block;
-          white-space: nowrap;
+        :global(.site-header__logo-img) {
+          display: block;
+          width: auto;
+          height: 22px;
         }
-        .site-header__wordmark {
-          white-space: nowrap;
-        }
-        .site-header__badge-sup {
-          position: absolute;
-          top: -5px;
-          left: 100%;
-          margin-left: 2px;
-          display: inline-flex;
-          flex-shrink: 0;
-        }
-        .site-header__role {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          min-width: 3.2em;
-          padding: 0.15rem 0.45rem;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          color: var(--color-white);
-          border-radius: 3px;
-          transform: translateY(-6px);
-          transition: background 260ms var(--ease-out);
+        @media (max-width: 560px) {
+          :global(.site-header__logo-img) {
+            height: 18px;
+          }
         }
         .site-header__nav {
           display: flex;
