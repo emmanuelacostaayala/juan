@@ -140,7 +140,7 @@ export default function MediaGrid() {
           max-width: 680px;
         }
         .media__tag {
-          color: var(--color-accent);
+          color: #0CAFFE;
           margin-bottom: 1rem;
         }
         .media__title {
