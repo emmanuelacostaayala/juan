@@ -8,14 +8,15 @@ import RenderSlider, { type Slide } from "@/components/RenderSlider";
 const RENDERS_DIR = "/larimar/renders";
 
 const SLIDER_SLIDES: Slide[] = [
+  { src: `${RENDERS_DIR}/larimar-overview-01.jpg`, alt: "Larimar City — vista aérea Fase 1", caption: "Larimar City · Fase 1" },
+  { src: `${RENDERS_DIR}/prime-towers-01.jpg`, alt: "Prime Towers — render exterior", caption: "Prime Towers" },
   { src: `${RENDERS_DIR}/horizon-view-01.jpg`, alt: "Horizon View — render exterior", caption: "Horizon View" },
+  { src: `${RENDERS_DIR}/paradise-towers-01.jpg`, alt: "Paradise Towers — render al atardecer", caption: "Paradise Towers" },
   { src: `${RENDERS_DIR}/breeze-towers-01.jpg`, alt: "Breeze Towers — render exterior", caption: "Breeze Towers" },
-  { src: `${RENDERS_DIR}/beach-club-01.jpg`, alt: "Beach Club — render frente al mar", caption: "Beach Club" },
-  { src: `${RENDERS_DIR}/paradise-residence.jpg`, alt: "Paradise Residence — render", caption: "Paradise Residence" },
   { src: `${RENDERS_DIR}/townhouses-01.jpg`, alt: "Townhouses — render exterior", caption: "Townhouses" },
-  { src: `${RENDERS_DIR}/sima-01.jpg`, alt: "Larimar City — vista aérea SIMA", caption: "SIMA Larimar City" },
-  { src: `${RENDERS_DIR}/restaurante-origen-01.jpg`, alt: "Restaurante Origen — render", caption: "Restaurante Origen" },
-  { src: `${RENDERS_DIR}/restaurante-amanalu-01.jpg`, alt: "Restaurante Amanalu — render", caption: "Restaurante Amanalu" },
+  { src: `${RENDERS_DIR}/villas-golf-01.jpg`, alt: "Villas Golf — render exterior", caption: "Villas Golf" },
+  { src: `${RENDERS_DIR}/sunset-residences-01.jpg`, alt: "Sunset Residences — render exterior", caption: "Sunset Residences" },
+  { src: `${RENDERS_DIR}/live-towers-01.jpg`, alt: "Live Towers — render exterior", caption: "Live Towers" },
 ];
 
 type Project = {
@@ -28,76 +29,68 @@ type Project = {
 
 const PROJECTS: Project[] = [
   {
-    key: "paradise",
-    title: "Paradise Tower",
+    key: "prime",
+    title: "Prime Towers",
     description:
-      "Torre residencial de gran altura con vistas al Caribe. Apartamentos y áticos con acabados premium frente al lago central.",
-    image: `${RENDERS_DIR}/paradise-tower-03.jpg`,
-    alt: "Paradise Tower — render de la torre residencial",
-  },
-  {
-    key: "breeze",
-    title: "Breeze Towers",
-    description:
-      "Conjunto de dos torres con tipologías compactas pensadas para inversión y residencia flexible junto a las amenidades centrales.",
-    image: `${RENDERS_DIR}/breeze-towers-01.jpg`,
-    alt: "Breeze Towers — render del conjunto residencial",
+      "Torres residenciales premium con vistas panorámicas. Tipologías amplias y acabados de gama alta en el corazón del masterplan.",
+    image: `${RENDERS_DIR}/prime-towers-01.jpg`,
+    alt: "Prime Towers — render exterior",
   },
   {
     key: "horizon",
     title: "Horizon View",
     description:
-      "Edificios bajos de uso mixto con apartamentos exteriores y zonas verdes integradas. Perfil arquitectónico tropical y luminoso.",
+      "Edificios de uso mixto con apartamentos exteriores, zonas verdes y un perfil arquitectónico tropical pensado para la luz natural.",
     image: `${RENDERS_DIR}/horizon-view-01.jpg`,
     alt: "Horizon View — render exterior",
+  },
+  {
+    key: "paradise",
+    title: "Paradise Towers",
+    description:
+      "Torres residenciales de gran altura frente al lago central. Apartamentos y áticos con vistas abiertas al Caribe y al masterplan.",
+    image: `${RENDERS_DIR}/paradise-towers-01.jpg`,
+    alt: "Paradise Towers — render al atardecer",
+  },
+  {
+    key: "breeze",
+    title: "Breeze Towers",
+    description:
+      "Conjunto de torres con tipologías compactas pensadas para inversión y residencia flexible, junto a las amenidades centrales.",
+    image: `${RENDERS_DIR}/breeze-towers-01.jpg`,
+    alt: "Breeze Towers — render del conjunto residencial",
   },
   {
     key: "townhouses",
     title: "Townhouses",
     description:
-      "Viviendas adosadas con jardín privado y acceso directo a las amenidades. Diseñadas para vida familiar dentro de la ciudad-destino.",
+      "Viviendas adosadas con jardín privado y acceso directo a las amenidades. Pensadas para vida familiar dentro de la ciudad-destino.",
     image: `${RENDERS_DIR}/townhouses-01.jpg`,
     alt: "Townhouses — render de viviendas adosadas",
   },
   {
-    key: "beach-club",
-    title: "Beach Club",
+    key: "villas-golf",
+    title: "Villas Golf",
     description:
-      "Club de playa privado para residentes con servicios de hospitalidad, gastronomía y deportes acuáticos sobre litoral protegido.",
-    image: `${RENDERS_DIR}/beach-club-01.jpg`,
-    alt: "Beach Club — render frente al mar",
+      "Villas exclusivas con vistas al campo de golf y al océano. Programa premium en parcelas amplias con piscina y jardín privados.",
+    image: `${RENDERS_DIR}/villas-golf-01.jpg`,
+    alt: "Villas Golf — render exterior",
   },
   {
-    key: "origen",
-    title: "Restaurante Origen",
+    key: "sunset",
+    title: "Sunset Residences",
     description:
-      "Propuesta gastronómica de cocina dominicana contemporánea, abierta a residentes y visitantes en el corazón de Larimar City.",
-    image: `${RENDERS_DIR}/restaurante-origen-01.jpg`,
-    alt: "Restaurante Origen — render de fachada",
+      "Apartamentos residenciales orientados al atardecer caribeño. Volumetría escalonada y terrazas que abren al paisaje y al horizonte.",
+    image: `${RENDERS_DIR}/sunset-residences-01.jpg`,
+    alt: "Sunset Residences — render exterior",
   },
   {
-    key: "amanalu",
-    title: "Restaurante Amanalu",
+    key: "live",
+    title: "Live Towers",
     description:
-      "Restaurante de inspiración mediterránea integrado al paisaje, con terrazas exteriores y barra abierta sobre los espejos de agua.",
-    image: `${RENDERS_DIR}/restaurante-amanalu-01.jpg`,
-    alt: "Restaurante Amanalu — render de terraza",
-  },
-  {
-    key: "limoncello",
-    title: "Restaurante Limoncello",
-    description:
-      "Cocina italiana auténtica en ambiente costero. Parte del distrito gastronómico de Larimar City, accesible a residentes y huéspedes.",
-    image: `${RENDERS_DIR}/restaurante-limoncello-01.jpg`,
-    alt: "Restaurante Limoncello — render exterior",
-  },
-  {
-    key: "sonestas",
-    title: "Larimar × Sonesta",
-    description:
-      "Alianza hotelera internacional que opera marcas Sonesta dentro de la ciudad-destino, ampliando la oferta turística y de inversión.",
-    image: `${RENDERS_DIR}/larimar-sonestas.jpg`,
-    alt: "Larimar City x Sonesta — alianza hotelera",
+      "Conjunto residencial flexible diseñado para vida urbana caribeña. Tipologías eficientes con amenidades de proximidad.",
+    image: `${RENDERS_DIR}/live-towers-01.jpg`,
+    alt: "Live Towers — render exterior",
   },
 ];
 
