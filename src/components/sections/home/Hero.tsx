@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -15,16 +14,20 @@ export default function Hero() {
   return (
     <section className="home-hero">
       <div className="home-hero__media" aria-hidden="true">
-        <Image
-          src={images.heroPool}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          quality={90}
-          className="home-hero__img"
-          style={{ objectFit: "cover", objectPosition: "center" }}
-        />
+        <picture>
+          <source
+            media="(orientation: portrait)"
+            srcSet="/photos/hero-portrait.jpg"
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={images.heroPool}
+            alt=""
+            className="home-hero__img"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
         <div className="home-hero__media-overlay" />
       </div>
 
@@ -119,7 +122,14 @@ export default function Hero() {
           inset: 0;
           background: #0a0a09;
         }
-        .home-hero__media :global(.home-hero__img) {
+        .home-hero__media picture,
+        .home-hero__media .home-hero__img {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+        }
+        .home-hero__img {
           object-fit: cover;
           object-position: center 25%;
         }
