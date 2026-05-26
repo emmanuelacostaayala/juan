@@ -2,35 +2,35 @@
    Neue Haas Grotesk Display Pro — local font
    ============================================================= */
 @font-face {
-  font-family: 'NeueHaasDisplay';
+  font-family: 'Neue Haas Grotesk Display Pro';
   src: url('/fonts/NeueHaasDisplayRoman.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'NeueHaasDisplay';
+  font-family: 'Neue Haas Grotesk Display Pro';
   src: url('/fonts/NeueHaasDisplayRomanItalic.ttf') format('truetype');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
-  font-family: 'NeueHaasDisplay';
+  font-family: 'Neue Haas Grotesk Display Pro';
   src: url('/fonts/NeueHaasDisplayMediu.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'NeueHaasDisplay';
+  font-family: 'Neue Haas Grotesk Display Pro';
   src: url('/fonts/NeueHaasDisplayMediumItalic.ttf') format('truetype');
   font-weight: 500;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
-  font-family: 'NeueHaasDisplay';
+  font-family: 'Neue Haas Grotesk Display Pro';
   src: url('/fonts/NeueHaasDisplayBold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
@@ -70,7 +70,7 @@
   --fg-on-dark-muted: var(--color-grey-400);
 
   /* Typography families — loaded in layout.tsx */
-  --font-display: 'NeueHaasDisplay', var(--font-satoshi), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Neue Haas Grotesk Display Pro', var(--font-satoshi), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-sans: var(--font-satoshi), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-serif: var(--font-playfair), Georgia, 'Times New Roman', serif;
 

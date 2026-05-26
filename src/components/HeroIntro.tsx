@@ -84,7 +84,7 @@ export default function HeroIntro() {
       <style jsx global>{`
         .intro__name {
           display: block;
-          font-family: 'NeueHaasDisplay', var(--font-display, sans-serif);
+          font-family: 'Neue Haas Grotesk Display Pro', var(--font-display, sans-serif);
           font-size: clamp(36px, 7vw, 96px);
           font-weight: 500;
           letter-spacing: -0.04em;
