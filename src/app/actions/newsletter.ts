@@ -2,7 +2,7 @@
 
 import crypto from "node:crypto";
 import { sql } from "@/lib/db";
-import { mailer, FROM } from "@/lib/mail";
+import { mailer, FROM, CONTACT_INBOX } from "@/lib/mail";
 import { renderNewsletterEmail } from "@/lib/newsletter-template";
 
 export type NewsletterState = {
@@ -34,6 +34,48 @@ const BIENVENIDA_TEXTO = [
 const MAX_ALTAS_POR_HORA = 30;
 /* Lo que se espera al SMTP antes de contestar al formulario. */
 const ESPERA_MAX_MS = 8000;
+
+/*
+ * Aviso interno de cada alta (18-nov-2026, lo pidió Enmanuel para Marta): a marketing@ y a
+ * info@ les llega un correo con quién se suscribió. Sale en los mismos casos que la
+ * bienvenida (alta nueva o vuelta tras una baja) y con el mismo freno de abusos, para que
+ * un alta masiva de correos ajenos no les llene la bandeja.
+ */
+const AVISO_ALTA_PARA = Array.from(
+  new Set(["marketing@juanandresromero.es", CONTACT_INBOX].map((c) => c.trim().toLowerCase())),
+);
+
+function escHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
+}
+
+async function avisarAlta(email: string, vuelve: boolean): Promise<void> {
+  const [{ activos }] = await sql<{ activos: number }[]>`
+    SELECT count(*)::int AS activos FROM subscribers WHERE status = 'active'
+  `;
+  const cuando = new Intl.DateTimeFormat("es-ES", {
+    dateStyle: "long",
+    timeStyle: "short",
+    timeZone: "America/Santo_Domingo",
+  }).format(new Date());
+  const lineas = [
+    `${email} se ha suscrito a la newsletter de juanandresromero.es${vuelve ? " (vuelve después de haberse dado de baja)" : ""}.`,
+    `Fecha: ${cuando} (hora de República Dominicana).`,
+    `Suscriptores activos ahora: ${activos}.`,
+    "Es un aviso automático de la web: no hace falta contestarlo.",
+  ];
+  await mailer.sendMail({
+    from: FROM,
+    to: AVISO_ALTA_PARA.join(", "),
+    subject: `Nueva suscripción a la newsletter: ${email}`,
+    text: lineas.join("\n\n"),
+    html: lineas.map((l) => `<p style="font-family:Arial,sans-serif;font-size:14px;color:#1f2937;margin:0 0 12px">${escHtml(l)}</p>`).join(""),
+    headers: {
+      "X-Auto-Response-Suppress": "All",
+      "Auto-Submitted": "auto-generated",
+    },
+  });
+}
 
 function newToken(): string {
   return crypto.randomBytes(24).toString("base64url");
@@ -76,11 +118,13 @@ export async function subscribeNewsletter(
 
   let token: string | null = null;
   let yaEstabaActivo = false;
+  let existiaAntes = false;
   try {
     const antes = await sql<{ status: string }[]>`
       SELECT status FROM subscribers WHERE email = ${email}
     `;
     yaEstabaActivo = antes[0]?.status === "active";
+    existiaAntes = antes.length > 0;
     const filas = await sql<{ unsubscribe_token: string | null }[]>`
       INSERT INTO subscribers (email, status, unsubscribe_token)
       VALUES (${email}, 'active', ${newToken()})
@@ -98,24 +142,25 @@ export async function subscribeNewsletter(
     };
   }
 
-  // La suscripción ya está guardada: un fallo de la bienvenida solo se registra.
+  // La suscripción ya está guardada: un fallo de la bienvenida o del aviso solo se registra.
   if (!yaEstabaActivo && token) {
     try {
       const [{ n }] = await sql<{ n: number }[]>`
         SELECT count(*)::int AS n FROM subscribers WHERE created_at > now() - interval '1 hour'
       `;
       if (n > MAX_ALTAS_POR_HORA) {
-        console.warn(`[newsletter] bienvenida NO enviada: ${n} altas en la última hora (freno de abusos)`);
+        console.warn(`[newsletter] bienvenida y aviso NO enviados: ${n} altas en la última hora (freno de abusos)`);
       } else {
-        // El .catch va pegado al envío: si tarda más que la espera y luego falla, el
-        // error se registra y no queda como rechazo sin atender.
-        const envio = enviarBienvenida(email, token).catch((err) =>
-          console.error("[newsletter] bienvenida no enviada", err),
-        );
-        await Promise.race([envio, new Promise<void>((res) => setTimeout(res, ESPERA_MAX_MS))]);
+        // Los dos correos salen a la vez. El .catch va pegado a cada envío: si tarda más
+        // que la espera y luego falla, el error se registra y no queda como rechazo sin atender.
+        const envios = Promise.all([
+          enviarBienvenida(email, token).catch((err) => console.error("[newsletter] bienvenida no enviada", err)),
+          avisarAlta(email, existiaAntes).catch((err) => console.error("[newsletter] aviso de alta no enviado", err)),
+        ]);
+        await Promise.race([envios, new Promise<void>((res) => setTimeout(res, ESPERA_MAX_MS))]);
       }
     } catch (err) {
-      console.error("[newsletter] bienvenida no enviada", err);
+      console.error("[newsletter] bienvenida y aviso no enviados", err);
     }
   }
   return { ok: true };
