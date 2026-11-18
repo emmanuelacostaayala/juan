@@ -3,12 +3,24 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import {
   publishNewsletter,
+  saveWelcome,
+  sendWelcomeTest,
   type PublishState,
+  type WelcomeState,
 } from "@/app/actions/admin-newsletter";
 import { logoutAdmin } from "@/app/actions/admin-auth";
 import { TEMPLATES, getTemplate } from "@/lib/newsletter-templates";
 
 const initial: PublishState = { ok: false };
+const initialWelcome: WelcomeState = { ok: false };
+
+type Welcome = {
+  subject: string;
+  body: string;
+  coverImageUrl: string | null;
+  enabled: boolean;
+  updatedAt: string | null;
+};
 
 type Post = {
   id: number;
@@ -23,16 +35,35 @@ export default function AdminDashboard({
   email,
   subscribers,
   posts,
+  welcome,
 }: {
   email: string;
   subscribers: number;
   posts: Post[];
+  welcome: Welcome;
 }) {
   const [state, action, pending] = useActionState(publishNewsletter, initial);
+  const [welcomeState, welcomeAction, welcomePending] = useActionState(saveWelcome, initialWelcome);
+  const [testState, testAction, testPending] = useActionState(sendWelcomeTest, initialWelcome);
+  const [tab, setTab] = useState<"post" | "welcome">("post");
+  const isWelcome = tab === "welcome";
   const [templateId, setTemplateId] = useState("blank");
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-  const [coverImageUrl, setCoverImageUrl] = useState("");
+
+  // Cada pestaña tiene su propio borrador: cambiar de pestaña no pisa lo escrito.
+  const [postTitle, setPostTitle] = useState("");
+  const [postBody, setPostBody] = useState("");
+  const [postCover, setPostCover] = useState("");
+  const [wTitle, setWTitle] = useState(welcome.subject);
+  const [wBody, setWBody] = useState(welcome.body);
+  const [wCover, setWCover] = useState(welcome.coverImageUrl ?? "");
+  const [wEnabled, setWEnabled] = useState(welcome.enabled);
+
+  const title = isWelcome ? wTitle : postTitle;
+  const body = isWelcome ? wBody : postBody;
+  const coverImageUrl = isWelcome ? wCover : postCover;
+  const setTitle = isWelcome ? setWTitle : setPostTitle;
+  const setBody = isWelcome ? setWBody : setPostBody;
+  const setCoverImageUrl = isWelcome ? setWCover : setPostCover;
   const [uploading, setUploading] = useState<"cover" | "inline" | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [previewHtml, setPreviewHtml] = useState<string>("");
@@ -144,8 +175,29 @@ export default function AdminDashboard({
       </section>
 
       <section className="admin__compose">
+        <div className="admin__tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={!isWelcome}
+            className={`admin__tab ${!isWelcome ? "is-active" : ""}`}
+            onClick={() => setTab("post")}
+          >
+            Nueva publicación
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={isWelcome}
+            className={`admin__tab ${isWelcome ? "is-active" : ""}`}
+            onClick={() => setTab("welcome")}
+          >
+            Mensaje de bienvenida
+          </button>
+        </div>
         <div className="admin__compose-head">
-          <h2 className="admin__h2">Nueva publicación</h2>
+          <h2 className="admin__h2">{isWelcome ? "Mensaje de bienvenida" : "Nueva publicación"}</h2>
+          {!isWelcome && (
           <label className="admin__tpl-select">
             <span>Plantilla</span>
             <select
@@ -157,15 +209,22 @@ export default function AdminDashboard({
               ))}
             </select>
           </label>
+          )}
         </div>
         <p className="admin__tpl-desc">
-          {getTemplate(templateId).description}
+          {isWelcome
+            ? `Se envía automáticamente a cada persona nueva que se suscribe, solo a ella.${
+                welcome.updatedAt
+                  ? ` Última modificación: ${new Date(welcome.updatedAt).toLocaleString("es-ES")}.`
+                  : " Aún no lo has personalizado: este es el texto por defecto."
+              }`
+            : getTemplate(templateId).description}
         </p>
 
         <div className="admin__split">
-          <form action={action} className="admin__form">
+          <form key={tab} action={isWelcome ? welcomeAction : action} className="admin__form">
             <label className="admin__label">
-              <span>Título</span>
+              <span>{isWelcome ? "Asunto" : "Título"}</span>
               <input
                 name="title"
                 type="text"
@@ -242,23 +301,59 @@ export default function AdminDashboard({
 
             {uploadError && <p className="admin__error" role="alert">{uploadError}</p>}
 
-            <label className="admin__check">
-              <input type="checkbox" name="send" defaultChecked />
-              <span>Enviar por email a los suscriptores activos ahora</span>
-            </label>
+            {isWelcome ? (
+              <>
+                <label className="admin__check">
+                  <input
+                    type="checkbox"
+                    name="enabled"
+                    checked={wEnabled}
+                    onChange={(e) => setWEnabled(e.target.checked)}
+                  />
+                  <span>Enviar automáticamente a cada nuevo suscriptor</span>
+                </label>
 
-            {state.error && <p className="admin__error" role="alert">{state.error}</p>}
-            {state.ok && (
-              <p className="admin__success" role="status">
-                {state.recipients
-                  ? `Publicación creada y enviada a ${state.recipients} suscriptor(es).`
-                  : "Publicación guardada como borrador."}
-              </p>
+                {welcomeState.error && <p className="admin__error" role="alert">{welcomeState.error}</p>}
+                {welcomeState.ok && <p className="admin__success" role="status">{welcomeState.message}</p>}
+                {testState.error && <p className="admin__error" role="alert">{testState.error}</p>}
+                {testState.ok && <p className="admin__success" role="status">{testState.message}</p>}
+
+                <div className="admin__actions">
+                  <button type="submit" className="admin__submit" disabled={welcomePending}>
+                    {welcomePending ? "Guardando…" : "Guardar bienvenida"}
+                  </button>
+                  <button
+                    type="submit"
+                    formAction={testAction}
+                    formNoValidate
+                    className="admin__secondary"
+                    disabled={testPending}
+                  >
+                    {testPending ? "Enviando…" : `Enviarme una prueba`}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <label className="admin__check">
+                  <input type="checkbox" name="send" defaultChecked />
+                  <span>Enviar por email a los suscriptores activos ahora</span>
+                </label>
+
+                {state.error && <p className="admin__error" role="alert">{state.error}</p>}
+                {state.ok && (
+                  <p className="admin__success" role="status">
+                    {state.recipients
+                      ? `Publicación creada y enviada a ${state.recipients} suscriptor(es).`
+                      : "Publicación guardada como borrador."}
+                  </p>
+                )}
+
+                <button type="submit" className="admin__submit" disabled={pending}>
+                  {pending ? "Publicando…" : "Publicar"}
+                </button>
+              </>
             )}
-
-            <button type="submit" className="admin__submit" disabled={pending}>
-              {pending ? "Publicando…" : "Publicar"}
-            </button>
           </form>
 
           <aside className="admin__preview">
@@ -544,6 +639,40 @@ export default function AdminDashboard({
           text-transform: uppercase;
         }
         .admin__submit:disabled { opacity: 0.6; }
+        .admin__actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+        .admin__secondary {
+          padding: 1rem 1.5rem;
+          background: transparent;
+          color: var(--color-ink);
+          border: 1px solid rgba(0,0,0,0.15);
+          border-radius: var(--radius-sm);
+          font-size: var(--fs-14);
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          cursor: pointer;
+        }
+        .admin__secondary:disabled { opacity: 0.6; }
+        .admin__tabs {
+          display: flex;
+          gap: 0.25rem;
+          margin-bottom: 1.5rem;
+          border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .admin__tab {
+          background: none;
+          border: none;
+          border-bottom: 2px solid transparent;
+          margin-bottom: -1px;
+          padding: 0.625rem 1rem;
+          font-size: var(--fs-13);
+          font-weight: 500;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          color: var(--fg-muted);
+          cursor: pointer;
+        }
+        .admin__tab.is-active { color: var(--color-ink); border-bottom-color: var(--color-ink); }
 
         .admin__preview {
           display: flex;

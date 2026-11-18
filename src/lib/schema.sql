@@ -38,3 +38,14 @@ CREATE TABLE IF NOT EXISTS admin_codes (
 
 CREATE INDEX IF NOT EXISTS idx_admin_codes_email_expires
   ON admin_codes (email, expires_at DESC);
+
+-- Mensaje de bienvenida editable desde /admin (una sola fila, id = 1).
+-- El código también la crea solo si no existe (src/lib/welcome.ts).
+CREATE TABLE IF NOT EXISTS welcome_email (
+  id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  subject TEXT NOT NULL,
+  body TEXT NOT NULL,
+  cover_image_url TEXT,
+  enabled BOOLEAN NOT NULL DEFAULT true,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

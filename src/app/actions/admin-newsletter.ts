@@ -5,6 +5,7 @@ import { sql } from "@/lib/db";
 import { mailer, FROM, CONTACT_INBOX } from "@/lib/mail";
 import { getSession } from "@/lib/session";
 import { renderNewsletterEmail } from "@/lib/newsletter-template";
+import { saveWelcomeEmail } from "@/lib/welcome";
 
 export type PublishState = {
   ok: boolean;
@@ -151,4 +152,79 @@ export async function publishNewsletter(
 
   revalidatePath("/admin");
   return { ok: true, recipients, slug };
+}
+
+/* ── Mensaje de bienvenida ─────────────────────────────────────────────── */
+
+export type WelcomeState = {
+  ok: boolean;
+  error?: string;
+  message?: string;
+};
+
+function leerBienvenida(formData: FormData) {
+  return {
+    subject: String(formData.get("title") ?? "").trim(),
+    body: String(formData.get("body") ?? "").trim(),
+    coverImageUrl: String(formData.get("coverImageUrl") ?? "").trim() || null,
+    enabled: formData.get("enabled") === "on",
+  };
+}
+
+export async function saveWelcome(
+  _prev: WelcomeState | null,
+  formData: FormData,
+): Promise<WelcomeState> {
+  const session = await getSession();
+  if (!session) return { ok: false, error: "Sesión expirada." };
+
+  const w = leerBienvenida(formData);
+  if (!w.subject || !w.body) return { ok: false, error: "Asunto y contenido son obligatorios." };
+
+  try {
+    await saveWelcomeEmail(w);
+  } catch (err) {
+    console.error("[welcome] save failed", err);
+    return { ok: false, error: "No se pudo guardar. Inténtalo de nuevo." };
+  }
+  revalidatePath("/admin");
+  return {
+    ok: true,
+    message: w.enabled
+      ? "Bienvenida guardada. Se enviará a cada nuevo suscriptor."
+      : "Bienvenida guardada pero desactivada: los nuevos suscriptores no la recibirán.",
+  };
+}
+
+// Envía el mensaje tal como está en el editor (aunque no esté guardado) solo a
+// la dirección con la que se ha iniciado sesión, para revisarlo en una bandeja real.
+export async function sendWelcomeTest(
+  _prev: WelcomeState | null,
+  formData: FormData,
+): Promise<WelcomeState> {
+  const session = await getSession();
+  if (!session) return { ok: false, error: "Sesión expirada." };
+
+  const w = leerBienvenida(formData);
+  if (!w.subject || !w.body) return { ok: false, error: "Asunto y contenido son obligatorios." };
+
+  const { html, text } = renderNewsletterEmail({
+    title: w.subject,
+    body: w.body,
+    unsubscribeUrl: `${SITE}/unsubscribe`,
+    coverImageUrl: w.coverImageUrl,
+  });
+  try {
+    await mailer.sendMail({
+      from: FROM,
+      to: session.email,
+      subject: `[Prueba] ${w.subject}`,
+      html,
+      text,
+    });
+  } catch (err) {
+    console.error("[welcome] test send failed", err);
+    return { ok: false, error: "No se pudo enviar la prueba." };
+  }
+  return { ok: true, message: `Prueba enviada a ${session.email}.` };
 }
