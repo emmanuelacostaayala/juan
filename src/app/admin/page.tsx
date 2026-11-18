@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { sql } from "@/lib/db";
+import { getWelcomeEmail, DEFAULT_WELCOME } from "@/lib/welcome";
 import AdminDashboard from "./AdminDashboard";
 
 export const dynamic = "force-dynamic";
@@ -33,7 +34,23 @@ export default async function AdminPage() {
     LIMIT 30
   `;
 
+  const welcome = await getWelcomeEmail().catch((err) => {
+    console.error("[admin] no se pudo leer la bienvenida", err);
+    return DEFAULT_WELCOME;
+  });
+
   return (
-    <AdminDashboard email={session.email} subscribers={subscribers} posts={posts} />
+    <AdminDashboard
+      email={session.email}
+      subscribers={subscribers}
+      posts={posts}
+      welcome={{
+        subject: welcome.subject,
+        body: welcome.body,
+        coverImageUrl: welcome.coverImageUrl,
+        enabled: welcome.enabled,
+        updatedAt: welcome.updatedAt ? welcome.updatedAt.toISOString() : null,
+      }}
+    />
   );
 }
