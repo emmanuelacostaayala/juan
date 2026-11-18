@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { sql } from "@/lib/db";
-import { getWelcomeMessage } from "@/lib/welcome";
+import { getWelcomeMessage, getWelcomeSentToExistingAt } from "@/lib/welcome";
 import AdminDashboard from "./AdminDashboard";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +35,7 @@ export default async function AdminPage() {
   `;
 
   const welcome = await getWelcomeMessage();
+  const welcomeSentAt = await getWelcomeSentToExistingAt();
 
   return (
     <AdminDashboard
@@ -42,6 +43,7 @@ export default async function AdminPage() {
       subscribers={subscribers}
       posts={posts}
       welcome={welcome}
+      welcomeSentAt={welcomeSentAt}
     />
   );
 }
