@@ -5,6 +5,7 @@ import { sql } from "@/lib/db";
 import { mailer, FROM, CONTACT_INBOX } from "@/lib/mail";
 import { getSession } from "@/lib/session";
 import { renderNewsletterEmail } from "@/lib/newsletter-template";
+import { saveWelcomeMessage } from "@/lib/welcome";
 
 export type PublishState = {
   ok: boolean;
@@ -151,4 +152,33 @@ export async function publishNewsletter(
 
   revalidatePath("/admin");
   return { ok: true, recipients, slug };
+}
+
+export type WelcomeState = { ok: boolean; error?: string };
+
+/* Guarda el mensaje de bienvenida. No envía nada: solo cambia lo que recibirán
+   los próximos suscriptores. */
+export async function saveWelcome(
+  _prev: WelcomeState | null,
+  formData: FormData,
+): Promise<WelcomeState> {
+  const session = await getSession();
+  if (!session) return { ok: false, error: "Sesión expirada." };
+
+  const subject = String(formData.get("title") ?? "").trim();
+  const body = String(formData.get("body") ?? "").trim();
+
+  if (!subject || !body) return { ok: false, error: "Asunto y contenido son obligatorios." };
+  if (subject.length > 140) return { ok: false, error: "El asunto es demasiado largo (máx. 140 caracteres)." };
+  if (body.length > 20000) return { ok: false, error: "El contenido es demasiado largo." };
+
+  try {
+    await saveWelcomeMessage({ subject, body });
+  } catch (err) {
+    console.error("[newsletter] no se pudo guardar la bienvenida", err);
+    return { ok: false, error: "No se pudo guardar. Inténtalo de nuevo en unos minutos." };
+  }
+
+  revalidatePath("/admin");
+  return { ok: true };
 }

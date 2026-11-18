@@ -3,12 +3,21 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import {
   publishNewsletter,
+  saveWelcome,
   type PublishState,
+  type WelcomeState,
 } from "@/app/actions/admin-newsletter";
 import { logoutAdmin } from "@/app/actions/admin-auth";
 import { TEMPLATES, getTemplate } from "@/lib/newsletter-templates";
 
 const initial: PublishState = { ok: false };
+const initialWelcome: WelcomeState = { ok: false };
+
+// Opción extra del desplegable «Plantilla»: no es una publicación, edita el
+// correo automático que reciben los nuevos suscriptores.
+const WELCOME_ID = "welcome";
+const WELCOME_DESC =
+  "Se envía automáticamente a cada persona que se suscribe. Al guardar no se manda nada a nadie: solo cambia lo que recibirán los próximos suscriptores.";
 
 type Post = {
   id: number;
@@ -23,12 +32,18 @@ export default function AdminDashboard({
   email,
   subscribers,
   posts,
+  welcome,
 }: {
   email: string;
   subscribers: number;
   posts: Post[];
+  welcome: { subject: string; body: string };
 }) {
   const [state, action, pending] = useActionState(publishNewsletter, initial);
+  const [welcomeState, welcomeAction, welcomePending] = useActionState(
+    saveWelcome,
+    initialWelcome,
+  );
   const [templateId, setTemplateId] = useState("blank");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -40,9 +55,17 @@ export default function AdminDashboard({
   const debounceRef = useRef<number | null>(null);
   const bodyRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const isWelcome = templateId === WELCOME_ID;
+
   // Apply template content
   function applyTemplate(id: string) {
     setTemplateId(id);
+    if (id === WELCOME_ID) {
+      setTitle(welcome.subject);
+      setBody(welcome.body);
+      setCoverImageUrl("");
+      return;
+    }
     const tpl = getTemplate(id);
     setTitle(tpl.title);
     setBody(tpl.body);
@@ -145,7 +168,9 @@ export default function AdminDashboard({
 
       <section className="admin__compose">
         <div className="admin__compose-head">
-          <h2 className="admin__h2">Nueva publicación</h2>
+          <h2 className="admin__h2">
+            {isWelcome ? "Mensaje de bienvenida" : "Nueva publicación"}
+          </h2>
           <label className="admin__tpl-select">
             <span>Plantilla</span>
             <select
@@ -155,29 +180,31 @@ export default function AdminDashboard({
               {TEMPLATES.map((t) => (
                 <option key={t.id} value={t.id}>{t.name}</option>
               ))}
+              <option value={WELCOME_ID}>Mensaje de bienvenida</option>
             </select>
           </label>
         </div>
         <p className="admin__tpl-desc">
-          {getTemplate(templateId).description}
+          {isWelcome ? WELCOME_DESC : getTemplate(templateId).description}
         </p>
 
         <div className="admin__split">
-          <form action={action} className="admin__form">
+          <form action={isWelcome ? welcomeAction : action} className="admin__form">
             <label className="admin__label">
-              <span>Título</span>
+              <span>{isWelcome ? "Asunto" : "Título"}</span>
               <input
                 name="title"
                 type="text"
                 required
                 maxLength={140}
-                placeholder="Ej. Avances · Trimestre Q1"
+                placeholder={isWelcome ? "Ej. Gracias por suscribirte" : "Ej. Avances · Trimestre Q1"}
                 className="admin__input"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
             </label>
 
+            {!isWelcome && (
             <div className="admin__label">
               <span>Imagen de portada <em className="admin__hint">(opcional, hasta 5 MB)</em></span>
               <input type="hidden" name="coverImageUrl" value={coverImageUrl} />
@@ -211,6 +238,7 @@ export default function AdminDashboard({
                 </div>
               )}
             </div>
+            )}
 
             <label className="admin__label">
               <span>
@@ -242,6 +270,22 @@ export default function AdminDashboard({
 
             {uploadError && <p className="admin__error" role="alert">{uploadError}</p>}
 
+            {isWelcome ? (
+              <>
+                {welcomeState.error && (
+                  <p className="admin__error" role="alert">{welcomeState.error}</p>
+                )}
+                {welcomeState.ok && (
+                  <p className="admin__success" role="status">
+                    Mensaje de bienvenida guardado. Lo recibirán los próximos suscriptores.
+                  </p>
+                )}
+                <button type="submit" className="admin__submit" disabled={welcomePending}>
+                  {welcomePending ? "Guardando…" : "Guardar mensaje de bienvenida"}
+                </button>
+              </>
+            ) : (
+            <>
             <label className="admin__check">
               <input type="checkbox" name="send" defaultChecked />
               <span>Enviar por email a los suscriptores activos ahora</span>
@@ -259,6 +303,8 @@ export default function AdminDashboard({
             <button type="submit" className="admin__submit" disabled={pending}>
               {pending ? "Publicando…" : "Publicar"}
             </button>
+            </>
+            )}
           </form>
 
           <aside className="admin__preview">
