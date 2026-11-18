@@ -5,7 +5,11 @@ import { sql } from "@/lib/db";
 import { mailer, FROM, CONTACT_INBOX } from "@/lib/mail";
 import { getSession } from "@/lib/session";
 import { renderNewsletterEmail } from "@/lib/newsletter-template";
-import { saveWelcomeMessage } from "@/lib/welcome";
+import {
+  getWelcomeMessage,
+  saveWelcomeMessage,
+  setWelcomeSentToExistingAt,
+} from "@/lib/welcome";
 
 export type PublishState = {
   ok: boolean;
@@ -181,4 +185,44 @@ export async function saveWelcome(
 
   revalidatePath("/admin");
   return { ok: true };
+}
+
+export type WelcomeBroadcastState = { ok: boolean; error?: string; recipients?: number };
+
+/* Botón «Enviar a los suscriptores actuales»: manda el mensaje de bienvenida
+   GUARDADO a todos los suscriptores activos de ahora. No crea publicación. */
+export async function sendWelcomeToExisting(
+  _prev: WelcomeBroadcastState | null,
+  _formData: FormData,
+): Promise<WelcomeBroadcastState> {
+  const session = await getSession();
+  if (!session) return { ok: false, error: "Sesión expirada." };
+
+  const { subject, body } = await getWelcomeMessage();
+
+  const subs = await sql<Sub[]>`
+    SELECT email, unsubscribe_token
+    FROM subscribers
+    WHERE status = 'active' AND unsubscribe_token IS NOT NULL
+  `;
+  if (subs.length === 0) return { ok: false, error: "No hay suscriptores activos." };
+
+  let recipients = 0;
+  for (let i = 0; i < subs.length; i++) {
+    if (i > 0) await sleep(SEND_DELAY_MS);
+    if (await sendOne(subs[i], subject, body, null)) recipients++;
+  }
+
+  if (recipients === 0) {
+    return { ok: false, error: "No se pudo enviar a nadie. Inténtalo de nuevo en unos minutos." };
+  }
+
+  try {
+    await setWelcomeSentToExistingAt(new Date().toISOString());
+  } catch (err) {
+    console.error("[newsletter] no se pudo registrar el envío de bienvenida", err);
+  }
+
+  revalidatePath("/admin");
+  return { ok: true, recipients };
 }

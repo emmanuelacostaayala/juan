@@ -4,14 +4,17 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import {
   publishNewsletter,
   saveWelcome,
+  sendWelcomeToExisting,
   type PublishState,
   type WelcomeState,
+  type WelcomeBroadcastState,
 } from "@/app/actions/admin-newsletter";
 import { logoutAdmin } from "@/app/actions/admin-auth";
 import { TEMPLATES, getTemplate } from "@/lib/newsletter-templates";
 
 const initial: PublishState = { ok: false };
 const initialWelcome: WelcomeState = { ok: false };
+const initialBroadcast: WelcomeBroadcastState = { ok: false };
 
 // Opción extra del desplegable «Plantilla»: no es una publicación, edita el
 // correo automático que reciben los nuevos suscriptores.
@@ -33,17 +36,24 @@ export default function AdminDashboard({
   subscribers,
   posts,
   welcome,
+  welcomeSentAt,
 }: {
   email: string;
   subscribers: number;
   posts: Post[];
   welcome: { subject: string; body: string };
+  welcomeSentAt: string | null;
 }) {
   const [state, action, pending] = useActionState(publishNewsletter, initial);
   const [welcomeState, welcomeAction, welcomePending] = useActionState(
     saveWelcome,
     initialWelcome,
   );
+  const [broadcastState, broadcastAction, broadcastPending] = useActionState(
+    sendWelcomeToExisting,
+    initialBroadcast,
+  );
+  const [confirmBroadcast, setConfirmBroadcast] = useState(false);
   const [templateId, setTemplateId] = useState("blank");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -56,6 +66,9 @@ export default function AdminDashboard({
   const bodyRef = useRef<HTMLTextAreaElement | null>(null);
 
   const isWelcome = templateId === WELCOME_ID;
+  // El botón de envío manda lo GUARDADO: si el editor tiene cambios, primero hay que guardar.
+  const welcomeDirty =
+    isWelcome && (title.trim() !== welcome.subject || body.trim() !== welcome.body);
 
   // Apply template content
   function applyTemplate(id: string) {
@@ -283,6 +296,68 @@ export default function AdminDashboard({
                 <button type="submit" className="admin__submit" disabled={welcomePending}>
                   {welcomePending ? "Guardando…" : "Guardar mensaje de bienvenida"}
                 </button>
+
+                <div className="admin__broadcast">
+                  <p className="admin__broadcast-title">Suscriptores actuales</p>
+                  <p className="admin__broadcast-text">
+                    Envía el mensaje de bienvenida guardado a los {subscribers} suscriptor
+                    {subscribers === 1 ? "" : "es"} activos de ahora. No se guarda como publicación.
+                  </p>
+                  {welcomeSentAt && (
+                    <p className="admin__broadcast-text">
+                      Ya se envió a los suscriptores actuales el{" "}
+                      {new Date(welcomeSentAt).toLocaleString("es-ES")}.
+                    </p>
+                  )}
+                  {broadcastState.error && (
+                    <p className="admin__error" role="alert">{broadcastState.error}</p>
+                  )}
+                  {broadcastState.ok && (
+                    <p className="admin__success" role="status">
+                      Mensaje de bienvenida enviado a {broadcastState.recipients} suscriptor(es).
+                    </p>
+                  )}
+                  {welcomeDirty ? (
+                    <p className="admin__broadcast-text">
+                      Tienes cambios sin guardar: guarda el mensaje antes de enviarlo.
+                    </p>
+                  ) : confirmBroadcast ? (
+                    <div className="admin__broadcast-row">
+                      <button
+                        type="submit"
+                        formAction={broadcastAction}
+                        formNoValidate
+                        className="admin__submit"
+                        disabled={broadcastPending}
+                        onClick={() => {
+                          // Se oculta la confirmación al terminar el envío.
+                          setTimeout(() => setConfirmBroadcast(false), 0);
+                        }}
+                      >
+                        {broadcastPending
+                          ? "Enviando…"
+                          : `Sí, enviar a ${subscribers} suscriptor${subscribers === 1 ? "" : "es"}`}
+                      </button>
+                      <button
+                        type="button"
+                        className="admin__link-btn admin__link-btn--muted"
+                        onClick={() => setConfirmBroadcast(false)}
+                        disabled={broadcastPending}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="admin__file-btn"
+                      onClick={() => setConfirmBroadcast(true)}
+                      disabled={broadcastPending || subscribers === 0}
+                    >
+                      {broadcastPending ? "Enviando…" : "Enviar a los suscriptores actuales"}
+                    </button>
+                  )}
+                </div>
               </>
             ) : (
             <>
@@ -590,6 +665,34 @@ export default function AdminDashboard({
           text-transform: uppercase;
         }
         .admin__submit:disabled { opacity: 0.6; }
+        .admin__broadcast {
+          margin-top: 1rem;
+          padding: 1.25rem;
+          background: var(--color-cream);
+          border-radius: var(--radius-md);
+          display: flex;
+          flex-direction: column;
+          gap: 0.6rem;
+          align-items: flex-start;
+        }
+        .admin__broadcast-title {
+          margin: 0;
+          font-size: var(--fs-13);
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+        .admin__broadcast-text {
+          margin: 0;
+          font-size: var(--fs-13);
+          color: var(--fg-muted);
+        }
+        .admin__broadcast-row {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+        }
+        .admin__link-btn--muted { color: var(--fg-muted); align-self: center; }
 
         .admin__preview {
           display: flex;

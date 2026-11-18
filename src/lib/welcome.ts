@@ -59,3 +59,28 @@ export async function saveWelcomeMessage(msg: WelcomeMessage): Promise<void> {
     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()
   `;
 }
+
+/* Fecha del último envío manual de la bienvenida a los suscriptores que ya
+   estaban dados de alta (botón del panel). Sirve para no mandarlo dos veces sin
+   darse cuenta. */
+const KEY_SENT_EXISTING = "welcome_sent_existing_at";
+
+export async function getWelcomeSentToExistingAt(): Promise<string | null> {
+  try {
+    const rows = await sql<{ value: string }[]>`
+      SELECT value FROM site_settings WHERE key = ${KEY_SENT_EXISTING}
+    `;
+    return rows[0]?.value ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function setWelcomeSentToExistingAt(iso: string): Promise<void> {
+  await ensureTable();
+  await sql`
+    INSERT INTO site_settings (key, value, updated_at)
+    VALUES (${KEY_SENT_EXISTING}, ${iso}, now())
+    ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()
+  `;
+}
