@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import { sql } from "@/lib/db";
 import { mailer, FROM } from "@/lib/mail";
 import { renderNewsletterEmail } from "@/lib/newsletter-template";
+import { getWelcomeMessage } from "@/lib/welcome";
 
 export type NewsletterState = {
   ok: boolean;
@@ -17,15 +18,8 @@ const SITE = "https://juanandresromero.es";
  * Correo de bienvenida (17-nov-2026). Hasta ahora suscribirse no mandaba nada y la
  * gente creía que no funcionaba (lo avisó Marta). Solo sale a quien se apunta de
  * nuevo o vuelve después de darse de baja: a quien ya estaba activo no se le repite.
+ * El asunto y el texto se editan en /admin (Plantilla → «Mensaje de bienvenida»).
  */
-const BIENVENIDA_ASUNTO = "Gracias por suscribirte";
-const BIENVENIDA_TEXTO = [
-  "Hola:",
-  "",
-  "Gracias por suscribirte a la newsletter de Juan Andrés Romero. A partir de ahora recibirás en este correo cada nueva publicación.",
-  "",
-  "Si no te suscribiste tú, puedes darte de baja con el enlace que aparece al final de este mensaje.",
-].join("\n");
 
 /* Freno contra abusos: el formulario es público y cada bienvenida sale por el SMTP
    de Zoho, que tiene un cupo por hora. Si alguien da de alta correos ajenos en masa,
@@ -42,15 +36,16 @@ function newToken(): string {
 async function enviarBienvenida(email: string, token: string): Promise<void> {
   const baja = `${SITE}/unsubscribe?t=${encodeURIComponent(token)}`;
   const bajaPost = `${SITE}/api/unsubscribe?t=${encodeURIComponent(token)}`;
+  const { subject, body } = await getWelcomeMessage();
   const { html, text } = renderNewsletterEmail({
-    title: BIENVENIDA_ASUNTO,
-    body: BIENVENIDA_TEXTO,
+    title: subject,
+    body,
     unsubscribeUrl: baja,
   });
   await mailer.sendMail({
     from: FROM,
     to: email,
-    subject: BIENVENIDA_ASUNTO,
+    subject,
     html,
     text,
     headers: {

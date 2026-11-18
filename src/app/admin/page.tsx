@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { sql } from "@/lib/db";
+import { getWelcomeMessage } from "@/lib/welcome";
 import AdminDashboard from "./AdminDashboard";
 
 export const dynamic = "force-dynamic";
@@ -33,7 +34,14 @@ export default async function AdminPage() {
     LIMIT 30
   `;
 
+  const welcome = await getWelcomeMessage();
+
   return (
-    <AdminDashboard email={session.email} subscribers={subscribers} posts={posts} />
+    <AdminDashboard
+      email={session.email}
+      subscribers={subscribers}
+      posts={posts}
+      welcome={welcome}
+    />
   );
 }

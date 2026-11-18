@@ -38,3 +38,11 @@ CREATE TABLE IF NOT EXISTS admin_codes (
 
 CREATE INDEX IF NOT EXISTS idx_admin_codes_email_expires
   ON admin_codes (email, expires_at DESC);
+
+-- Ajustes editables desde /admin (p. ej. el mensaje de bienvenida).
+-- La app también la crea sola la primera vez que se guarda.
+CREATE TABLE IF NOT EXISTS site_settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
