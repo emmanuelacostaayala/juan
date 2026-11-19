@@ -13,7 +13,7 @@ export type WelcomeMessage = { subject: string; body: string };
 export const DEFAULT_WELCOME: WelcomeMessage = {
   subject: "Gracias por suscribirte",
   body: [
-    "Hola:",
+    "Hola, {nombre}:",
     "",
     "Gracias por suscribirte a la newsletter de Juan Andrés Romero. A partir de ahora recibirás en este correo cada nueva publicación.",
     "",

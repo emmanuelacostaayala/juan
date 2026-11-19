@@ -46,3 +46,7 @@ CREATE TABLE IF NOT EXISTS site_settings (
   value TEXT NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Nombre y apellidos del suscriptor (los pide el formulario desde el 18-nov-2026).
+ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS last_name TEXT;

@@ -5,6 +5,8 @@ import { sql } from "@/lib/db";
 import { mailer, FROM, CONTACT_INBOX } from "@/lib/mail";
 import { getSession } from "@/lib/session";
 import { renderNewsletterEmail } from "@/lib/newsletter-template";
+import { personalize } from "@/lib/personalize";
+import { ensureSubscriberNameColumn } from "@/lib/subscribers";
 import {
   getWelcomeMessage,
   saveWelcomeMessage,
@@ -200,8 +202,9 @@ export async function sendWelcomeToExisting(
 
   const { subject, body } = await getWelcomeMessage();
 
-  const subs = await sql<Sub[]>`
-    SELECT email, unsubscribe_token
+  await ensureSubscriberNameColumn();
+  const subs = await sql<(Sub & { name: string | null; last_name: string | null })[]>`
+    SELECT email, unsubscribe_token, name, last_name
     FROM subscribers
     WHERE status = 'active' AND unsubscribe_token IS NOT NULL
   `;
@@ -210,7 +213,9 @@ export async function sendWelcomeToExisting(
   let recipients = 0;
   for (let i = 0; i < subs.length; i++) {
     if (i > 0) await sleep(SEND_DELAY_MS);
-    if (await sendOne(subs[i], subject, body, null)) recipients++;
+    const s = subs[i];
+    const who = { name: s.name, lastName: s.last_name };
+    if (await sendOne(s, personalize(subject, who), personalize(body, who), null)) recipients++;
   }
 
   if (recipients === 0) {
