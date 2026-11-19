@@ -10,6 +10,7 @@ import {
   type WelcomeBroadcastState,
 } from "@/app/actions/admin-newsletter";
 import { logoutAdmin } from "@/app/actions/admin-auth";
+import VideoUploader, { type CurrentVideo } from "./VideoUploader";
 import { TEMPLATES, getTemplate } from "@/lib/newsletter-templates";
 import { personalize } from "@/lib/personalize";
 
@@ -39,12 +40,14 @@ export default function AdminDashboard({
   posts,
   welcome,
   welcomeSentAt,
+  video,
 }: {
   email: string;
   subscribers: number;
   posts: Post[];
   welcome: { subject: string; body: string };
   welcomeSentAt: string | null;
+  video: CurrentVideo;
 }) {
   const [state, action, pending] = useActionState(publishNewsletter, initial);
   const [welcomeState, welcomeAction, welcomePending] = useActionState(
@@ -199,6 +202,8 @@ export default function AdminDashboard({
           <span className="admin__stat-label">Publicaciones totales</span>
         </div>
       </section>
+
+      <VideoUploader current={video} />
 
       <section className="admin__compose">
         <div className="admin__compose-head">

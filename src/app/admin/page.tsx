@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { sql } from "@/lib/db";
 import { getWelcomeMessage, getWelcomeSentToExistingAt } from "@/lib/welcome";
+import { getStoredVideo, r2Config } from "@/lib/video-r2";
 import AdminDashboard from "./AdminDashboard";
 
 export const dynamic = "force-dynamic";
@@ -37,6 +38,16 @@ export default async function AdminPage() {
   const welcome = await getWelcomeMessage();
   const welcomeSentAt = await getWelcomeSentToExistingAt();
 
+  const configured = r2Config() !== null;
+  const stored = configured ? await getStoredVideo() : null;
+  const video = {
+    configured,
+    title: stored?.title ?? null,
+    size: stored?.size ?? null,
+    uploadedAt: stored?.uploadedAt ?? null,
+    source: stored ? ("r2" as const) : ("youtube" as const),
+  };
+
   return (
     <AdminDashboard
       email={session.email}
@@ -44,6 +55,7 @@ export default async function AdminPage() {
       posts={posts}
       welcome={welcome}
       welcomeSentAt={welcomeSentAt}
+      video={video}
     />
   );
 }

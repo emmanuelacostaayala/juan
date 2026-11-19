@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import VideoGate from "@/components/VideoGate";
 import VideoPlayer from "@/components/VideoPlayer";
-import { r2VideoUrl } from "@/lib/video-r2";
+import { getStoredVideo, r2Config, r2VideoUrl } from "@/lib/video-r2";
 import { currentVideoViewer } from "@/lib/video-access";
 import { EXCLUSIVE_VIDEO, embedUrl, thumbnailUrl } from "@/lib/video";
 
@@ -27,9 +27,11 @@ export const metadata: Metadata = {
 
 export default async function VideoPage() {
   const viewer = await currentVideoViewer();
-  const v = EXCLUSIVE_VIDEO;
-  // Con R2 configurado, el vídeo sale de ahí con un enlace que caduca; si no, de YouTube.
-  const r2 = viewer ? r2VideoUrl() : null;
+  // Con R2 configurado y un vídeo subido desde el panel, sale de ahí con un enlace
+  // que caduca; si no, de YouTube (lib/video.ts).
+  const stored = r2Config() ? await getStoredVideo() : null;
+  const v = { ...EXCLUSIVE_VIDEO, title: stored?.title || EXCLUSIVE_VIDEO.title };
+  const r2 = viewer ? await r2VideoUrl() : null;
 
   return (
     <main style={{ minHeight: "100vh", background: "var(--color-ink)", color: "var(--color-white)", display: "flex", alignItems: "center", padding: "8rem 0 5rem" }}>
@@ -61,7 +63,7 @@ export default async function VideoPage() {
             </p>
           </div>
         ) : (
-          <VideoGate title={v.title} thumbnail={thumbnailUrl(v)} />
+          <VideoGate title={v.title} thumbnail={stored ? null : thumbnailUrl(v)} />
         )}
       </div>
     </main>

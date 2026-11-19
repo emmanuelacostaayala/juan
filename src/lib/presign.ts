@@ -13,7 +13,17 @@ function rfc3986(s: string): string {
 const hmac = (key: crypto.BinaryLike, data: string) => crypto.createHmac("sha256", key).update(data).digest();
 const sha256hex = (data: string) => crypto.createHash("sha256").update(data).digest("hex");
 
-export function presignGet(opts: {
+export function presignGet(opts: Omit<PresignOpts, "method">): string {
+  return presign({ ...opts, method: "GET" });
+}
+
+/* Enlace temporal para SUBIR un archivo (PUT) directamente desde el navegador. */
+export function presignPut(opts: Omit<PresignOpts, "method">): string {
+  return presign({ ...opts, method: "PUT" });
+}
+
+type PresignOpts = {
+  method: "GET" | "PUT";
   host: string; // p. ej. <cuenta>.r2.cloudflarestorage.com
   path: string; // p. ej. /<bucket>/<archivo>
   accessKeyId: string;
@@ -21,7 +31,9 @@ export function presignGet(opts: {
   region?: string; // R2: "auto"
   expiresIn: number;
   now?: Date;
-}): string {
+};
+
+function presign(opts: PresignOpts): string {
   const region = opts.region ?? "auto";
   const now = opts.now ?? new Date();
   const amzDate = now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); // YYYYMMDDTHHMMSSZ
@@ -42,7 +54,7 @@ export function presignGet(opts: {
     .map(([k, v]) => `${k}=${v}`)
     .join("&");
 
-  const canonicalRequest = ["GET", canonicalPath, query, `host:${opts.host}\n`, "host", "UNSIGNED-PAYLOAD"].join("\n");
+  const canonicalRequest = [opts.method, canonicalPath, query, `host:${opts.host}\n`, "host", "UNSIGNED-PAYLOAD"].join("\n");
   const stringToSign = ["AWS4-HMAC-SHA256", amzDate, scope, sha256hex(canonicalRequest)].join("\n");
   const kDate = hmac(`AWS4${opts.secretAccessKey}`, date);
   const kSigning = hmac(hmac(hmac(kDate, region), "s3"), "aws4_request");
