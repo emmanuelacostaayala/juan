@@ -133,8 +133,8 @@ export function renderNewsletterEmail({
     <td align="center" style="padding:32px 16px;">
       <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;">
         <tr>
-          <td bgcolor="#000000" style="background:#000000;padding:28px 40px;">
-            <img src="${SITE}/brand/jar-wordmark-email.png" width="300" alt="JUAN ANDRÉS ROMERO" style="display:block;width:300px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;color:#ffffff;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:700;letter-spacing:0.08em;" />
+          <td align="center" bgcolor="#000000" style="background:#000000;padding:56px 40px;">
+            <img src="${SITE}/brand/jar-wordmark-email.png" width="190" alt="JUAN ANDRÉS ROMERO" style="display:block;margin:0 auto;width:190px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;color:#ffffff;font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;" />
           </td>
         </tr>
         ${coverHtml}
