@@ -59,6 +59,16 @@ export default function AdminDashboard({
   const [templateId, setTemplateId] = useState("blank");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  // Último texto guardado: el del servidor al cargar y, tras guardar, el del editor
+  // (así el aviso de «cambios sin guardar» desaparece sin recargar la página).
+  const [savedWelcome, setSavedWelcome] = useState(welcome);
+  const lastSavedState = useRef(welcomeState);
+  useEffect(() => {
+    if (welcomeState !== lastSavedState.current) {
+      lastSavedState.current = welcomeState;
+      if (welcomeState.ok) setSavedWelcome({ subject: title.trim(), body: body.trim() });
+    }
+  }, [welcomeState, title, body]);
   const [coverImageUrl, setCoverImageUrl] = useState("");
   const [uploading, setUploading] = useState<"cover" | "inline" | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -70,14 +80,14 @@ export default function AdminDashboard({
   const isWelcome = templateId === WELCOME_ID;
   // El botón de envío manda lo GUARDADO: si el editor tiene cambios, primero hay que guardar.
   const welcomeDirty =
-    isWelcome && (title.trim() !== welcome.subject || body.trim() !== welcome.body);
+    isWelcome && (title.trim() !== savedWelcome.subject || body.trim() !== savedWelcome.body);
 
   // Apply template content
   function applyTemplate(id: string) {
     setTemplateId(id);
     if (id === WELCOME_ID) {
-      setTitle(welcome.subject);
-      setBody(welcome.body);
+      setTitle(savedWelcome.subject);
+      setBody(savedWelcome.body);
       setCoverImageUrl("");
       return;
     }
