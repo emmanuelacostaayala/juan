@@ -7,6 +7,7 @@ import { getSession } from "@/lib/session";
 import { renderNewsletterEmail } from "@/lib/newsletter-template";
 import { personalize } from "@/lib/personalize";
 import { ensureSubscriberNameColumn } from "@/lib/subscribers";
+import { logSend, trackMarkdownLinks } from "@/lib/tracking";
 import {
   getWelcomeMessage,
   saveWelcomeMessage,
@@ -47,18 +48,20 @@ async function sleep(ms: number) {
   return new Promise<void>((res) => setTimeout(res, ms));
 }
 
-type Sub = { email: string; unsubscribe_token: string };
+type Sub = { id: number; email: string; unsubscribe_token: string };
 
 async function sendOne(
   sub: Sub,
   title: string,
   body: string,
   coverImageUrl: string | null,
+  campaign: string,
 ): Promise<boolean> {
   const url = unsubUrl(sub.unsubscribe_token);
   const { html, text } = renderNewsletterEmail({
     title,
-    body,
+    // Enlaces medidos: cada clic queda registrado con la campaña y el suscriptor.
+    body: trackMarkdownLinks(body, campaign, sub.id),
     unsubscribeUrl: url,
     coverImageUrl,
   });
@@ -76,6 +79,7 @@ async function sendOne(
         Precedence: "bulk",
       },
     });
+    await logSend(campaign, sub.id);
     return true;
   } catch (err) {
     console.error("[newsletter] send failed for", sub.email, err);
@@ -113,7 +117,7 @@ export async function publishNewsletter(
 
   if (sendNow) {
     const subs = await sql<Sub[]>`
-      SELECT email, unsubscribe_token
+      SELECT id, email, unsubscribe_token
       FROM subscribers
       WHERE status = 'active' AND unsubscribe_token IS NOT NULL
     `;
@@ -122,7 +126,7 @@ export async function publishNewsletter(
     // spam-pattern detectors. Sleep BEFORE each send except the first.
     for (let i = 0; i < subs.length; i++) {
       if (i > 0) await sleep(SEND_DELAY_MS);
-      const ok = await sendOne(subs[i], title, body, coverImageUrl);
+      const ok = await sendOne(subs[i], title, body, coverImageUrl, slug);
       if (ok) recipients++;
     }
 
@@ -204,7 +208,7 @@ export async function sendWelcomeToExisting(
 
   await ensureSubscriberNameColumn();
   const subs = await sql<(Sub & { name: string | null; last_name: string | null })[]>`
-    SELECT email, unsubscribe_token, name, last_name
+    SELECT id, email, unsubscribe_token, name, last_name
     FROM subscribers
     WHERE status = 'active' AND unsubscribe_token IS NOT NULL
   `;
@@ -215,7 +219,7 @@ export async function sendWelcomeToExisting(
     if (i > 0) await sleep(SEND_DELAY_MS);
     const s = subs[i];
     const who = { name: s.name, lastName: s.last_name };
-    if (await sendOne(s, personalize(subject, who), personalize(body, who), null)) recipients++;
+    if (await sendOne(s, personalize(subject, who), personalize(body, who), null, "bienvenida")) recipients++;
   }
 
   if (recipients === 0) {

@@ -7,6 +7,14 @@ import { renderNewsletterEmail } from "@/lib/newsletter-template";
 import { getWelcomeMessage } from "@/lib/welcome";
 import { cleanName, personalize, type Person } from "@/lib/personalize";
 import { ensureSubscriberNameColumn } from "@/lib/subscribers";
+import {
+  cleanTag,
+  ensureTrackingTables,
+  hostOf,
+  logSend,
+  resolveSource,
+  trackMarkdownLinks,
+} from "@/lib/tracking";
 
 export type NewsletterState = {
   ok: boolean;
@@ -77,12 +85,13 @@ function newToken(): string {
   return crypto.randomBytes(24).toString("base64url");
 }
 
-async function enviarBienvenida(email: string, person: Person, token: string): Promise<void> {
+async function enviarBienvenida(email: string, person: Person, token: string, subscriberId: number | null): Promise<void> {
   const baja = `${SITE}/unsubscribe?t=${encodeURIComponent(token)}`;
   const bajaPost = `${SITE}/api/unsubscribe?t=${encodeURIComponent(token)}`;
   const welcome = await getWelcomeMessage();
   const subject = personalize(welcome.subject, person);
-  const body = personalize(welcome.body, person);
+  // Los enlaces de la bienvenida pasan por /r para contar los clics (campaña «bienvenida»).
+  const body = trackMarkdownLinks(personalize(welcome.body, person), "bienvenida", subscriberId);
   const { html, text } = renderNewsletterEmail({
     title: subject,
     body,
@@ -101,6 +110,7 @@ async function enviarBienvenida(email: string, person: Person, token: string): P
       "Auto-Submitted": "auto-generated",
     },
   });
+  await logSend("bienvenida", subscriberId);
 }
 
 export async function subscribeNewsletter(
@@ -118,17 +128,24 @@ export async function subscribeNewsletter(
   if (!email) return { ok: false, error: "Introduce tu correo." };
   if (!EMAIL_RE.test(email)) return { ok: false, error: "Correo no válido." };
 
+  // Origen del alta (lo rellena el formulario; ver NewsletterBlock).
+  const refHost = hostOf(String(formData.get("ref") ?? ""));
+  const source = resolveSource(cleanTag(String(formData.get("src") ?? "")), refHost);
+  const landing = String(formData.get("landing") ?? "").slice(0, 100) || null;
+
   let token: string | null = null;
+  let subscriberId: number | null = null;
   let yaEstabaActivo = false;
   let existiaAntes = false;
   try {
     await ensureSubscriberNameColumn();
+    await ensureTrackingTables().catch((err) => console.error("[tracking] tablas", err));
     const antes = await sql<{ status: string }[]>`
       SELECT status FROM subscribers WHERE email = ${email}
     `;
     yaEstabaActivo = antes[0]?.status === "active";
     existiaAntes = antes.length > 0;
-    const filas = await sql<{ unsubscribe_token: string | null }[]>`
+    const filas = await sql<{ id: number; unsubscribe_token: string | null }[]>`
       INSERT INTO subscribers (email, name, last_name, status, unsubscribe_token)
       VALUES (${email}, ${name}, ${lastName || null}, 'active', ${newToken()})
       ON CONFLICT (email) DO UPDATE SET
@@ -136,9 +153,18 @@ export async function subscribeNewsletter(
         name = EXCLUDED.name,
         last_name = COALESCE(EXCLUDED.last_name, subscribers.last_name),
         unsubscribe_token = COALESCE(subscribers.unsubscribe_token, EXCLUDED.unsubscribe_token)
-      RETURNING unsubscribe_token
+      RETURNING id, unsubscribe_token
     `;
     token = filas[0]?.unsubscribe_token ?? null;
+    subscriberId = filas[0]?.id ?? null;
+    // El origen se guarda aparte: si las columnas aún no existieran, el alta no falla.
+    // Solo se apunta en altas nuevas o vueltas, no cuando alguien ya activo repite el formulario.
+    if (subscriberId && !yaEstabaActivo) {
+      await sql`
+        UPDATE subscribers SET source = ${source}, referrer_host = ${refHost}, landing = ${landing}
+        WHERE id = ${subscriberId}
+      `.catch((err) => console.error("[tracking] origen no guardado", err));
+    }
   } catch (err) {
     console.error("[newsletter] insert error", err);
     return {
@@ -159,7 +185,7 @@ export async function subscribeNewsletter(
         // Los dos correos salen a la vez. El .catch va pegado a cada envío: si tarda más
         // que la espera y luego falla, el error se registra y no queda como rechazo sin atender.
         const envios = Promise.all([
-          enviarBienvenida(email, { name, lastName }, token).catch((err) => console.error("[newsletter] bienvenida no enviada", err)),
+          enviarBienvenida(email, { name, lastName }, token, subscriberId).catch((err) => console.error("[newsletter] bienvenida no enviada", err)),
           avisarAlta(email, `${name} ${lastName}`.trim(), existiaAntes).catch((err) => console.error("[newsletter] aviso de alta no enviado", err)),
         ]);
         await Promise.race([envios, new Promise<void>((res) => setTimeout(res, ESPERA_MAX_MS))]);

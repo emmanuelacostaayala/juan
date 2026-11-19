@@ -50,3 +50,34 @@ CREATE TABLE IF NOT EXISTS site_settings (
 -- Nombre y apellidos del suscriptor (los pide el formulario desde el 18-nov-2026).
 ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS name TEXT;
 ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS last_name TEXT;
+
+-- Medición de la newsletter (19-nov-2026). La app también lo crea solo (lib/tracking.ts).
+ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS source TEXT;
+ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS referrer_host TEXT;
+ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS landing TEXT;
+CREATE TABLE IF NOT EXISTS newsletter_visits (
+  id SERIAL PRIMARY KEY,
+  path TEXT NOT NULL,
+  source TEXT,
+  campaign TEXT,
+  referrer_host TEXT,
+  bot TEXT,
+  visitor TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_nl_visits_created ON newsletter_visits (created_at);
+CREATE TABLE IF NOT EXISTS email_sends (
+  id SERIAL PRIMARY KEY,
+  campaign TEXT NOT NULL,
+  subscriber_id INTEGER,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS email_clicks (
+  id SERIAL PRIMARY KEY,
+  campaign TEXT NOT NULL,
+  url TEXT NOT NULL,
+  subscriber_id INTEGER,
+  bot TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_email_clicks_campaign ON email_clicks (campaign);

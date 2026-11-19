@@ -1,13 +1,34 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Reveal } from "@/lib/motion";
 import { subscribeNewsletter, type NewsletterState } from "@/app/actions/newsletter";
 
 const initialState: NewsletterState = { ok: false };
 
+/* Origen de la visita (para las estadísticas del panel): la etiqueta del enlace
+   (?utm_source= o ?ref=), la web de la que viene y la página donde se apunta.
+   Se guarda el primero de la sesión, por si navega por la web antes de suscribirse. */
+type Origin = { src: string; ref: string; landing: string };
+function readOrigin(): Origin {
+  const KEY = "jar_nl_origin";
+  try {
+    const saved = sessionStorage.getItem(KEY);
+    if (saved) return { ...JSON.parse(saved), landing: location.pathname };
+  } catch {}
+  const q = new URLSearchParams(location.search);
+  const ref = document.referrer && !document.referrer.startsWith(location.origin) ? document.referrer : "";
+  const o = { src: q.get("utm_source") || q.get("ref") || q.get("src") || "", ref, landing: location.pathname };
+  try {
+    sessionStorage.setItem(KEY, JSON.stringify({ src: o.src, ref: o.ref }));
+  } catch {}
+  return o;
+}
+
 export default function NewsletterBlock() {
   const [state, formAction, pending] = useActionState(subscribeNewsletter, initialState);
+  const [origin, setOrigin] = useState<Origin>({ src: "", ref: "", landing: "" });
+  useEffect(() => setOrigin(readOrigin()), []);
 
   return (
     <section id="newsletter" className="nl section">
@@ -35,6 +56,9 @@ export default function NewsletterBlock() {
                 aria-hidden="true"
                 style={{ position: "absolute", left: "-9999px", width: 1, height: 1 }}
               />
+              <input type="hidden" name="src" value={origin.src} />
+              <input type="hidden" name="ref" value={origin.ref} />
+              <input type="hidden" name="landing" value={origin.landing} />
               <input
                 type="text"
                 name="name"
