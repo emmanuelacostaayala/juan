@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import VideoGate from "@/components/VideoGate";
+import VideoPlayer from "@/components/VideoPlayer";
+import { r2VideoUrl } from "@/lib/video-r2";
 import { currentVideoViewer } from "@/lib/video-access";
 import { EXCLUSIVE_VIDEO, embedUrl, thumbnailUrl } from "@/lib/video";
 
@@ -26,6 +28,8 @@ export const metadata: Metadata = {
 export default async function VideoPage() {
   const viewer = await currentVideoViewer();
   const v = EXCLUSIVE_VIDEO;
+  // Con R2 configurado, el vídeo sale de ahí con un enlace que caduca; si no, de YouTube.
+  const r2 = viewer ? r2VideoUrl() : null;
 
   return (
     <main style={{ minHeight: "100vh", background: "var(--color-ink)", color: "var(--color-white)", display: "flex", alignItems: "center", padding: "8rem 0 5rem" }}>
@@ -39,14 +43,18 @@ export default async function VideoPage() {
               {v.title}
             </h1>
             <div style={{ position: "relative", aspectRatio: "16 / 9", borderRadius: "var(--radius-md)", overflow: "hidden", background: "#000" }}>
-              <iframe
-                src={embedUrl(v)}
-                title={v.title}
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }}
-                allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                allowFullScreen
-                referrerPolicy="strict-origin-when-cross-origin"
-              />
+              {r2 ? (
+                <VideoPlayer src={r2} title={v.title} />
+              ) : (
+                <iframe
+                  src={embedUrl(v)}
+                  title={v.title}
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }}
+                  allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                  allowFullScreen
+                  referrerPolicy="strict-origin-when-cross-origin"
+                />
+              )}
             </div>
             <p style={{ marginTop: "1rem", fontSize: "var(--fs-13)", color: "rgba(255,255,255,0.4)" }}>
               Acceso personal de {viewer}. Por favor, no compartas este enlace.
