@@ -3,7 +3,10 @@
  * se pone el de la persona. Si falta el dato (p. ej. quien se suscribió antes de
  * que el formulario lo pidiera), se quita el hueco junto con la coma o el espacio
  * de delante: «Hola, {nombre}:» → «Hola:».
+ * Además, «Bienvenido/a» se ajusta según el nombre (ver lib/gender.ts).
  */
+
+import { applyGender, genderFromName } from "@/lib/gender";
 
 export type Person = { name?: string | null; lastName?: string | null };
 
@@ -29,5 +32,7 @@ export function personalize(text: string, p: Person): string {
   // Apellidos primero: así «{nombre} {apellidos}» sin apellidos queda «Marta».
   let out = fill(text, "apellidos", cleanName(p.lastName ?? ""));
   out = fill(out, "nombre", cleanName(p.name ?? ""));
+  // «Bienvenido/a» → «Bienvenido» o «Bienvenida» si el nombre lo deja claro.
+  out = applyGender(out, genderFromName(cleanName(p.name ?? "")));
   return out;
 }
