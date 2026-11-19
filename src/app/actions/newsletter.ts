@@ -5,6 +5,8 @@ import { sql } from "@/lib/db";
 import { mailer, FROM, CONTACT_INBOX } from "@/lib/mail";
 import { renderNewsletterEmail } from "@/lib/newsletter-template";
 import { getWelcomeMessage } from "@/lib/welcome";
+import { cleanName, personalize, type Person } from "@/lib/personalize";
+import { ensureSubscriberNameColumn } from "@/lib/subscribers";
 
 export type NewsletterState = {
   ok: boolean;
@@ -43,7 +45,7 @@ function escHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
 }
 
-async function avisarAlta(email: string, vuelve: boolean): Promise<void> {
+async function avisarAlta(email: string, fullName: string, vuelve: boolean): Promise<void> {
   const [{ activos }] = await sql<{ activos: number }[]>`
     SELECT count(*)::int AS activos FROM subscribers WHERE status = 'active'
   `;
@@ -53,7 +55,7 @@ async function avisarAlta(email: string, vuelve: boolean): Promise<void> {
     timeZone: "America/Santo_Domingo",
   }).format(new Date());
   const lineas = [
-    `${email} se ha suscrito a la newsletter de juanandresromero.es${vuelve ? " (vuelve después de haberse dado de baja)" : ""}.`,
+    `${fullName} (${email}) se ha suscrito a la newsletter de juanandresromero.es${vuelve ? " (vuelve después de haberse dado de baja)" : ""}.`,
     `Fecha: ${cuando} (hora de República Dominicana).`,
     `Suscriptores activos ahora: ${activos}.`,
     "Es un aviso automático de la web: no hace falta contestarlo.",
@@ -61,7 +63,7 @@ async function avisarAlta(email: string, vuelve: boolean): Promise<void> {
   await mailer.sendMail({
     from: FROM,
     to: AVISO_ALTA_PARA.join(", "),
-    subject: `Nueva suscripción a la newsletter: ${email}`,
+    subject: `Nueva suscripción a la newsletter: ${fullName} (${email})`,
     text: lineas.join("\n\n"),
     html: lineas.map((l) => `<p style="font-family:Arial,sans-serif;font-size:14px;color:#1f2937;margin:0 0 12px">${escHtml(l)}</p>`).join(""),
     headers: {
@@ -75,10 +77,12 @@ function newToken(): string {
   return crypto.randomBytes(24).toString("base64url");
 }
 
-async function enviarBienvenida(email: string, token: string): Promise<void> {
+async function enviarBienvenida(email: string, person: Person, token: string): Promise<void> {
   const baja = `${SITE}/unsubscribe?t=${encodeURIComponent(token)}`;
   const bajaPost = `${SITE}/api/unsubscribe?t=${encodeURIComponent(token)}`;
-  const { subject, body } = await getWelcomeMessage();
+  const welcome = await getWelcomeMessage();
+  const subject = personalize(welcome.subject, person);
+  const body = personalize(welcome.body, person);
   const { html, text } = renderNewsletterEmail({
     title: subject,
     body,
@@ -105,9 +109,12 @@ export async function subscribeNewsletter(
 ): Promise<NewsletterState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const honeypot = String(formData.get("company") ?? "").trim();
+  const name = cleanName(String(formData.get("name") ?? ""));
+  const lastName = cleanName(String(formData.get("lastName") ?? ""));
 
   if (honeypot) return { ok: true };
 
+  if (!name) return { ok: false, error: "Introduce tu nombre." };
   if (!email) return { ok: false, error: "Introduce tu correo." };
   if (!EMAIL_RE.test(email)) return { ok: false, error: "Correo no válido." };
 
@@ -115,16 +122,19 @@ export async function subscribeNewsletter(
   let yaEstabaActivo = false;
   let existiaAntes = false;
   try {
+    await ensureSubscriberNameColumn();
     const antes = await sql<{ status: string }[]>`
       SELECT status FROM subscribers WHERE email = ${email}
     `;
     yaEstabaActivo = antes[0]?.status === "active";
     existiaAntes = antes.length > 0;
     const filas = await sql<{ unsubscribe_token: string | null }[]>`
-      INSERT INTO subscribers (email, status, unsubscribe_token)
-      VALUES (${email}, 'active', ${newToken()})
+      INSERT INTO subscribers (email, name, last_name, status, unsubscribe_token)
+      VALUES (${email}, ${name}, ${lastName || null}, 'active', ${newToken()})
       ON CONFLICT (email) DO UPDATE SET
         status = 'active',
+        name = EXCLUDED.name,
+        last_name = COALESCE(EXCLUDED.last_name, subscribers.last_name),
         unsubscribe_token = COALESCE(subscribers.unsubscribe_token, EXCLUDED.unsubscribe_token)
       RETURNING unsubscribe_token
     `;
@@ -149,8 +159,8 @@ export async function subscribeNewsletter(
         // Los dos correos salen a la vez. El .catch va pegado a cada envío: si tarda más
         // que la espera y luego falla, el error se registra y no queda como rechazo sin atender.
         const envios = Promise.all([
-          enviarBienvenida(email, token).catch((err) => console.error("[newsletter] bienvenida no enviada", err)),
-          avisarAlta(email, existiaAntes).catch((err) => console.error("[newsletter] aviso de alta no enviado", err)),
+          enviarBienvenida(email, { name, lastName }, token).catch((err) => console.error("[newsletter] bienvenida no enviada", err)),
+          avisarAlta(email, `${name} ${lastName}`.trim(), existiaAntes).catch((err) => console.error("[newsletter] aviso de alta no enviado", err)),
         ]);
         await Promise.race([envios, new Promise<void>((res) => setTimeout(res, ESPERA_MAX_MS))]);
       }

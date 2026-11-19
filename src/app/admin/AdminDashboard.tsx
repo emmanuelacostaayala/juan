@@ -11,6 +11,7 @@ import {
 } from "@/app/actions/admin-newsletter";
 import { logoutAdmin } from "@/app/actions/admin-auth";
 import { TEMPLATES, getTemplate } from "@/lib/newsletter-templates";
+import { personalize } from "@/lib/personalize";
 
 const initial: PublishState = { ok: false };
 const initialWelcome: WelcomeState = { ok: false };
@@ -19,6 +20,7 @@ const initialBroadcast: WelcomeBroadcastState = { ok: false };
 // Opción extra del desplegable «Plantilla»: no es una publicación, edita el
 // correo automático que reciben los nuevos suscriptores.
 const WELCOME_ID = "welcome";
+const PREVIEW_PERSON = { name: "Marta", lastName: "García López" };
 const WELCOME_DESC =
   "Se envía automáticamente a cada persona que se suscribe. Al guardar no se manda nada a nadie: solo cambia lo que recibirán los próximos suscriptores.";
 
@@ -93,7 +95,16 @@ export default function AdminDashboard({
         const res = await fetch("/api/admin/preview", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, body, coverImageUrl }),
+          // En la bienvenida, la vista previa muestra un suscriptor de ejemplo.
+          body: JSON.stringify(
+            templateId === WELCOME_ID
+              ? {
+                  title: personalize(title, PREVIEW_PERSON),
+                  body: personalize(body, PREVIEW_PERSON),
+                  coverImageUrl,
+                }
+              : { title, body, coverImageUrl },
+          ),
         });
         if (res.ok) {
           const j = await res.json();
@@ -106,7 +117,7 @@ export default function AdminDashboard({
     return () => {
       if (debounceRef.current) window.clearTimeout(debounceRef.current);
     };
-  }, [title, body, coverImageUrl]);
+  }, [title, body, coverImageUrl, templateId]);
 
   async function uploadFile(file: File): Promise<string | null> {
     setUploadError(null);
@@ -282,6 +293,15 @@ export default function AdminDashboard({
             </label>
 
             {uploadError && <p className="admin__error" role="alert">{uploadError}</p>}
+
+            {isWelcome && (
+              <p className="admin__hint">
+                Escribe <code>{"{nombre}"}</code> o <code>{"{apellidos}"}</code> donde quieras los
+                datos de cada suscriptor (p. ej. «Hola, {"{nombre}"}:»). La vista previa usa un
+                ejemplo: {PREVIEW_PERSON.name} {PREVIEW_PERSON.lastName}. A quien no tenga nombre
+                guardado le saldrá solo «Hola:».
+              </p>
+            )}
 
             {isWelcome ? (
               <>

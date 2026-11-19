@@ -132,24 +132,12 @@ export function renderNewsletterEmail({
   <tr>
     <td align="center" style="padding:32px 16px;">
       <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;">
-        ${coverHtml}
         <tr>
-          <td style="padding:32px 40px 8px;">
-            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-              <tr>
-                <td style="font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;color:#888;text-transform:uppercase;">
-                  JUAN ANDRÉS ROMERO
-                </td>
-                <td width="6"></td>
-                <td valign="top" style="padding-top:2px;">
-                  <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-                    <td width="10" height="10" bgcolor="#0CAFFE" style="background:#0CAFFE;background:linear-gradient(135deg,#12C9F9 0%,#0CAFFE 50%,#0678FF 100%);font-size:0;line-height:0;">&nbsp;</td>
-                  </tr></table>
-                </td>
-              </tr>
-            </table>
+          <td bgcolor="#000000" style="background:#000000;padding:28px 40px;">
+            <img src="${SITE}/brand/jar-wordmark-email.png" width="300" alt="JUAN ANDRÉS ROMERO" style="display:block;width:300px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;color:#ffffff;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:700;letter-spacing:0.08em;" />
           </td>
         </tr>
+        ${coverHtml}
         <tr>
           <td style="padding:8px 40px 0;">
             ${previewBanner}

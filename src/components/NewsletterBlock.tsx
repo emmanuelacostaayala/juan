@@ -36,6 +36,25 @@ export default function NewsletterBlock() {
                 style={{ position: "absolute", left: "-9999px", width: 1, height: 1 }}
               />
               <input
+                type="text"
+                name="name"
+                className="nl__input nl__input--half"
+                placeholder="Nombre"
+                required
+                maxLength={80}
+                autoComplete="given-name"
+                aria-label="Nombre"
+              />
+              <input
+                type="text"
+                name="lastName"
+                className="nl__input nl__input--half"
+                placeholder="Apellidos (opcional)"
+                maxLength={80}
+                autoComplete="family-name"
+                aria-label="Apellidos"
+              />
+              <input
                 type="email"
                 name="email"
                 className="nl__input"
@@ -106,6 +125,7 @@ export default function NewsletterBlock() {
           outline: none;
           transition: border-color 180ms var(--ease-out);
         }
+        .nl__input--half { flex: 1 1 calc(50% - 0.375rem); }
         .nl__input::placeholder { color: rgba(255,255,255,0.35); }
         .nl__input:focus { border-color: rgba(255,255,255,0.4); }
         .nl__btn {
