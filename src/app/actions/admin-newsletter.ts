@@ -8,6 +8,7 @@ import { renderNewsletterEmail } from "@/lib/newsletter-template";
 import { personalize } from "@/lib/personalize";
 import { ensureSubscriberNameColumn } from "@/lib/subscribers";
 import { videoAccessUrl } from "@/lib/video-access";
+import { saveExclusiveVideo, youtubeIdFrom } from "@/lib/video-settings";
 import {
   getWelcomeMessage,
   saveWelcomeMessage,
@@ -231,4 +232,28 @@ export async function sendWelcomeToExisting(
 
   revalidatePath("/admin");
   return { ok: true, recipients };
+}
+
+export type VideoSettingsState = { ok: boolean; error?: string };
+
+/* Cambia el vídeo exclusivo de /video pegando su enlace de YouTube. */
+export async function saveVideoSettings(
+  _prev: VideoSettingsState | null,
+  formData: FormData,
+): Promise<VideoSettingsState> {
+  const session = await getSession();
+  if (!session) return { ok: false, error: "Sesión expirada." };
+  const id = youtubeIdFrom(String(formData.get("url") ?? ""));
+  const title = String(formData.get("title") ?? "").trim().slice(0, 140);
+  if (!id) return { ok: false, error: "No reconozco ese enlace de YouTube. Pega el enlace del vídeo (youtu.be/… o youtube.com/watch?v=…)." };
+  if (!title) return { ok: false, error: "Pon un título al vídeo." };
+  try {
+    await saveExclusiveVideo(id, title);
+  } catch (err) {
+    console.error("[video] no se pudo guardar", err);
+    return { ok: false, error: "No se pudo guardar. Inténtalo de nuevo en unos minutos." };
+  }
+  revalidatePath("/admin");
+  revalidatePath("/video");
+  return { ok: true };
 }

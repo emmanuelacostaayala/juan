@@ -5,7 +5,7 @@ import { mailer, FROM } from "@/lib/mail";
 import { renderNewsletterEmail } from "@/lib/newsletter-template";
 import { subscribeNewsletter } from "@/app/actions/newsletter";
 import { grantVideoAccess, videoAccessUrl } from "@/lib/video-access";
-import { EXCLUSIVE_VIDEO } from "@/lib/video";
+import { getExclusiveVideo } from "@/lib/video-settings";
 
 export type VideoGateState = { ok: boolean; error?: string; sent?: boolean; unlocked?: boolean };
 
@@ -43,7 +43,7 @@ export async function unlockVideo(
       const link = videoAccessUrl(email);
       const { html, text } = renderNewsletterEmail({
         title: "Tu acceso al vídeo",
-        body: `Aquí tienes tu enlace personal para ver **${EXCLUSIVE_VIDEO.title}**:\n\n[Ver el vídeo](${link})\n\nEs solo para ti: funciona mientras sigas suscrito/a a la newsletter.`,
+        body: `Aquí tienes tu enlace personal para ver **${(await getExclusiveVideo()).title}**:\n\n[Ver el vídeo](${link})\n\nEs solo para ti: funciona mientras sigas suscrito/a a la newsletter.`,
         unsubscribeUrl: `https://juanandresromero.es/unsubscribe?t=${encodeURIComponent(unsubToken ?? "")}`,
       });
       await mailer.sendMail({ from: FROM, to: email, subject: "Tu acceso al vídeo", html, text });
