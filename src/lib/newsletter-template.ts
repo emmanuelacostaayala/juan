@@ -20,11 +20,11 @@ function buildRenderer(): Partial<Renderer> {
     const text = (this as Renderer).parser.parseInline(tokens);
     const sizes = [0, 28, 22, 18];
     const size = sizes[depth] ?? 16;
-    return `<h${depth} style="font-family:Georgia,'Times New Roman',serif;font-size:${size}px;line-height:1.2;letter-spacing:-0.02em;color:#1a1a18;font-weight:500;margin:24px 0 12px;">${text}</h${depth}>`;
+    return `<h${depth} style="font-family:'Inter',Helvetica,Arial,sans-serif;font-size:${size}px;line-height:1.2;letter-spacing:-0.02em;color:#1a1a18;font-weight:700;margin:24px 0 12px;">${text}</h${depth}>`;
   };
   r.paragraph = function ({ tokens }: Tokens.Paragraph) {
     const text = (this as Renderer).parser.parseInline(tokens);
-    return `<p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#1a1a18;">${text}</p>`;
+    return `<p style="margin:0 0 16px;font-family:'Satoshi',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.65;color:#1a1a18;">${text}</p>`;
   };
   r.strong = function ({ tokens }: Tokens.Strong) {
     const text = (this as Renderer).parser.parseInline(tokens);
@@ -50,7 +50,7 @@ function buildRenderer(): Partial<Renderer> {
   };
   r.blockquote = function ({ tokens }: Tokens.Blockquote) {
     const body = (this as Renderer).parser.parse(tokens);
-    return `<blockquote style="margin:0 0 16px;padding:8px 16px;border-left:3px solid #0678FF;color:#5a5a55;font-style:italic;font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.55;">${body}</blockquote>`;
+    return `<blockquote style="margin:0 0 16px;padding:8px 16px;border-left:3px solid #0678FF;color:#5a5a55;font-style:italic;font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-size:17px;line-height:1.55;">${body}</blockquote>`;
   };
   r.hr = function () {
     return `<hr style="border:none;border-top:1px solid #ececea;margin:24px 0;">`;
@@ -124,9 +124,11 @@ export function renderNewsletterEmail({
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
 <title>${escapeHtml(title)}</title>
 </head>
-<body style="margin:0;padding:0;background:#f6f4ef;font-family:Helvetica,Arial,sans-serif;color:#1a1a18;-webkit-font-smoothing:antialiased;">
+<body style="margin:0;padding:0;background:#f6f4ef;font-family:'Satoshi',Helvetica,Arial,sans-serif;color:#1a1a18;-webkit-font-smoothing:antialiased;">
 <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${escapeHtml(title)} — Juan Andrés Romero</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f6f4ef;">
   <tr>
@@ -145,7 +147,7 @@ export function renderNewsletterEmail({
         </tr>
         <tr>
           <td style="padding:16px 40px 32px;">
-            <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:32px;line-height:1.15;letter-spacing:-0.02em;color:#1a1a18;font-weight:500;margin:0 0 24px;">${escapeHtml(title)}</h1>
+            <h1 style="font-family:'Inter',Helvetica,Arial,sans-serif;font-size:32px;line-height:1.15;letter-spacing:-0.02em;color:#1a1a18;font-weight:700;margin:0 0 24px;">${escapeHtml(title)}</h1>
             ${bodyHtml}
           </td>
         </tr>
