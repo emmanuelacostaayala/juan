@@ -184,9 +184,14 @@ export default function AdminDashboard({
           <p className="admin__hello">Sesión: <strong>{email}</strong></p>
           <h1 className="admin__title">Newsletter</h1>
         </div>
-        <form action={logoutAdmin}>
-          <button className="admin__logout" type="submit">Cerrar sesión</button>
-        </form>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <a href="/admin/estadisticas" className="admin__logout" style={{ textDecoration: "none", color: "inherit" }}>
+            Estadísticas
+          </a>
+          <form action={logoutAdmin}>
+            <button className="admin__logout" type="submit">Cerrar sesión</button>
+          </form>
+        </div>
       </header>
 
       <section className="admin__stats">
