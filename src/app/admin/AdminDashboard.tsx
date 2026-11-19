@@ -56,6 +56,9 @@ export default function AdminDashboard({
     initialBroadcast,
   );
   const [confirmBroadcast, setConfirmBroadcast] = useState(false);
+  const [templateId, setTemplateId] = useState("blank");
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
   // Último texto guardado: el del servidor al cargar y, tras guardar, el del editor
   // (así el aviso de «cambios sin guardar» desaparece sin recargar la página).
   const [savedWelcome, setSavedWelcome] = useState(welcome);
@@ -66,9 +69,6 @@ export default function AdminDashboard({
       if (welcomeState.ok) setSavedWelcome({ subject: title.trim(), body: body.trim() });
     }
   }, [welcomeState, title, body]);
-  const [templateId, setTemplateId] = useState("blank");
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
   const [coverImageUrl, setCoverImageUrl] = useState("");
   const [uploading, setUploading] = useState<"cover" | "inline" | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
