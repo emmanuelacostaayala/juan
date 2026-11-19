@@ -7,6 +7,7 @@ import { getSession } from "@/lib/session";
 import { renderNewsletterEmail } from "@/lib/newsletter-template";
 import { personalize } from "@/lib/personalize";
 import { ensureSubscriberNameColumn } from "@/lib/subscribers";
+import { videoAccessUrl } from "@/lib/video-access";
 import { logSend, trackMarkdownLinks } from "@/lib/tracking";
 import {
   getWelcomeMessage,
@@ -218,7 +219,7 @@ export async function sendWelcomeToExisting(
   for (let i = 0; i < subs.length; i++) {
     if (i > 0) await sleep(SEND_DELAY_MS);
     const s = subs[i];
-    const who = { name: s.name, lastName: s.last_name };
+    const who = { name: s.name, lastName: s.last_name, videoUrl: videoAccessUrl(s.email) };
     if (await sendOne(s, personalize(subject, who), personalize(body, who), null, "bienvenida")) recipients++;
   }
 

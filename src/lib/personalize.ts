@@ -8,7 +8,9 @@
 
 import { applyGender, genderFromName } from "@/lib/gender";
 
-export type Person = { name?: string | null; lastName?: string | null };
+/* videoUrl: enlace personal al vídeo exclusivo (lo calcula el servidor; ver
+   lib/video-access.ts). Sin él, {enlace_video} lleva a la página general /video. */
+export type Person = { name?: string | null; lastName?: string | null; videoUrl?: string | null };
 
 /* Solo letras, marcas, espacios, guion, apóstrofo y punto: el texto pasa por
    Markdown/HTML al montar el correo, así que no se deja colar nada más. */
@@ -32,6 +34,7 @@ export function personalize(text: string, p: Person): string {
   // Apellidos primero: así «{nombre} {apellidos}» sin apellidos queda «Marta».
   let out = fill(text, "apellidos", cleanName(p.lastName ?? ""));
   out = fill(out, "nombre", cleanName(p.name ?? ""));
+  out = out.replace(/\{\s*enlace_video\s*\}/gi, p.videoUrl || "https://juanandresromero.es/video");
   // «Bienvenido/a» → «Bienvenido» o «Bienvenida» si el nombre lo deja claro.
   out = applyGender(out, genderFromName(cleanName(p.name ?? "")));
   return out;

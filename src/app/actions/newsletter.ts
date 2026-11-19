@@ -7,6 +7,7 @@ import { renderNewsletterEmail } from "@/lib/newsletter-template";
 import { getWelcomeMessage } from "@/lib/welcome";
 import { cleanName, personalize, type Person } from "@/lib/personalize";
 import { ensureSubscriberNameColumn } from "@/lib/subscribers";
+import { videoAccessUrl } from "@/lib/video-access";
 import {
   cleanTag,
   ensureTrackingTables,
@@ -185,7 +186,7 @@ export async function subscribeNewsletter(
         // Los dos correos salen a la vez. El .catch va pegado a cada envío: si tarda más
         // que la espera y luego falla, el error se registra y no queda como rechazo sin atender.
         const envios = Promise.all([
-          enviarBienvenida(email, { name, lastName }, token, subscriberId).catch((err) => console.error("[newsletter] bienvenida no enviada", err)),
+          enviarBienvenida(email, { name, lastName, videoUrl: videoAccessUrl(email) }, token, subscriberId).catch((err) => console.error("[newsletter] bienvenida no enviada", err)),
           avisarAlta(email, `${name} ${lastName}`.trim(), existiaAntes).catch((err) => console.error("[newsletter] aviso de alta no enviado", err)),
         ]);
         await Promise.race([envios, new Promise<void>((res) => setTimeout(res, ESPERA_MAX_MS))]);

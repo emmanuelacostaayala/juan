@@ -314,7 +314,9 @@ export default function AdminDashboard({
                 Escribe <code>{"{nombre}"}</code> o <code>{"{apellidos}"}</code> donde quieras los
                 datos de cada suscriptor (p. ej. «Hola, {"{nombre}"}:»). La vista previa usa un
                 ejemplo: {PREVIEW_PERSON.name} {PREVIEW_PERSON.lastName}. A quien no tenga nombre
-                guardado le saldrá solo «Hola:». «Bienvenido/a» se cambia solo a «Bienvenido» o
+                guardado le saldrá solo «Hola:». Para el vídeo exclusivo, usa{" "}
+                <code>{"{enlace_video}"}</code> como enlace (p. ej. «[Ver el vídeo]({"{enlace_video}"})»):
+                cada suscriptor recibe su enlace personal. «Bienvenido/a» se cambia solo a «Bienvenido» o
                 «Bienvenida» según el nombre; si el nombre no lo deja claro, se queda «Bienvenido/a».
               </p>
             )}
