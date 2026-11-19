@@ -3,7 +3,8 @@ import VideoGate from "@/components/VideoGate";
 import VideoPlayer from "@/components/VideoPlayer";
 import { r2VideoUrl } from "@/lib/video-r2";
 import { currentVideoViewer } from "@/lib/video-access";
-import { EXCLUSIVE_VIDEO, embedUrl, thumbnailUrl } from "@/lib/video";
+import { embedUrl, thumbnailUrl } from "@/lib/video";
+import { getExclusiveVideo } from "@/lib/video-settings";
 
 /*
  * Vídeo exclusivo para suscriptores. Se ve solo con acceso (enlace personal del
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
 
 export default async function VideoPage() {
   const viewer = await currentVideoViewer();
-  const v = EXCLUSIVE_VIDEO;
+  const v = await getExclusiveVideo();
   // Con R2 configurado, el vídeo sale de ahí con un enlace que caduca; si no, de YouTube.
   const r2 = viewer ? r2VideoUrl() : null;
 
